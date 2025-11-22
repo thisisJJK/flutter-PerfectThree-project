@@ -11,8 +11,9 @@ dependencies:
     sdk: flutter
 
   # [상태 관리] 앱의 데이터 흐름을 관리하는 최고의 라이브러리
-  flutter_riverpod: 
-  riverpod_annotation: 
+  flutter_riverpod: ^2.5.1
+  riverpod_annotation: ^2.3.5
+  
 
   # [화면 이동] 화면 간의 이동(라우팅)을 쉽고 직관적으로 처리
   go_router: 
@@ -20,6 +21,7 @@ dependencies:
   # [로컬 데이터베이스] 데이터를 폰에 빠르고 안전하게 저장 (Hive)
   hive: 
   hive_flutter: 
+  
 
   # [광고] 수익화를 위한 구글 애드몹
   google_mobile_ads: 
@@ -32,15 +34,19 @@ dependencies:
 
   # [경로] 파일 시스템 경로를 쉽게 찾게 해줌
   path_provider: 
+  # [모델] 고유 id 생성
+  uuid:
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   
   # [코드 생성] 반복적인 코드를 자동으로 작성해주는 도구들
-  build_runner: 
-  riverpod_generator: 
-  hive_generator:
+  build_runner: ^2.4.13 
+  riverpod_generator: ^2.4.0
+  hive_generator: 
+  analyzer: 
+  
   
   # [린트] 코드를 깔끔하고 규격에 맞게 작성하도록 도와줌
   flutter_lints: 
