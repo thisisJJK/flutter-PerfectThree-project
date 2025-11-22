@@ -2,6 +2,7 @@
 
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:uuid/uuid.dart';
+
 import '../../../../core/utils/logger.dart';
 import '../../../../data/models/goal.dart';
 import '../../../../data/repositories/goal_repository.dart';
@@ -20,7 +21,7 @@ class GoalViewModel extends _$GoalViewModel {
   Future<List<Goal>> build() async {
     // Repository를 가져옵니다.
     _repository = ref.watch(goalRepositoryProvider);
-    
+
     // 저장된 목표들을 불러옵니다.
     List<Goal> goals = await _repository.getGoals();
 
@@ -44,7 +45,7 @@ class GoalViewModel extends _$GoalViewModel {
       await _repository.saveGoal(newGoal);
 
       // 상태 새로고침 (목록 다시 불러오기)
-      ref.invalidateSelf(); 
+      ref.invalidateSelf();
       CustomLogger.info("새 목표 추가됨: $title");
     } catch (e, stackTrace) {
       CustomLogger.error("목표 추가 중 에러", e, stackTrace);
@@ -83,9 +84,10 @@ class GoalViewModel extends _$GoalViewModel {
       }).toList();
 
       state = AsyncValue.data(newGoalList);
-      
-      CustomLogger.debug("체크박스 변경: ${updatedGoal.title} [$dayIndex] -> ${newChecks[dayIndex]}");
 
+      CustomLogger.debug(
+        "체크박스 변경: ${updatedGoal.title} [$dayIndex] -> ${newChecks[dayIndex]}",
+      );
     } catch (e, stackTrace) {
       CustomLogger.error("체크박스 토글 실패", e, stackTrace);
     }
@@ -95,7 +97,7 @@ class GoalViewModel extends _$GoalViewModel {
   Future<void> deleteGoal(String goalId) async {
     try {
       await _repository.deleteGoal(goalId);
-      
+
       // 상태에서 해당 목표 제거 (UI 즉시 반영)
       if (state.hasValue) {
         final newGoalList = state.value!.where((g) => g.id != goalId).toList();
@@ -129,7 +131,7 @@ class GoalViewModel extends _$GoalViewModel {
             checks: [false, false, false],
             lastUpdatedDate: now,
           );
-          
+
           // DB 업데이트
           await _repository.saveGoal(resetGoal);
           processedGoals.add(resetGoal);

@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:perfect_three/data/models/goal.dart';
-import 'package:perfect_three/features/goals/viewmodel/goal_viewmodel.dart';
 import 'package:perfect_three/routes/app_router.dart';
 
 import 'core/utils/logger.dart';
@@ -32,8 +31,6 @@ class MyApp extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // ViewModel 상태 감시 (데이터 로드)
-    final goalsAsync = ref.watch(goalViewModelProvider);
     // 라우터 설정 가져오기
     final router = ref.watch(appRouterProvider);
     return MaterialApp.router(

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:perfect_three/features/ads/banner_ad_widget.dart';
 import 'package:perfect_three/features/goals/viewmodel/goal_viewmodel.dart';
 import 'package:perfect_three/features/goals/widgets/goal_card.dart';
-
 
 class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
@@ -77,6 +77,9 @@ class HomeScreen extends ConsumerWidget {
         icon: const Icon(Icons.add),
         backgroundColor: Colors.blue,
         foregroundColor: Colors.white,
+      ),
+      bottomNavigationBar: SafeArea(
+        child: SizedBox(height: 60, child: BottomBannerAd()),
       ),
     );
   }

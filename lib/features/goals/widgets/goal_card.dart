@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
 import '../../../data/models/goal.dart';
 import '../viewmodel/goal_viewmodel.dart';
 
@@ -34,9 +35,12 @@ class GoalCard extends ConsumerWidget {
                   ),
                 ),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 6,
+                  ),
                   decoration: BoxDecoration(
-                    color: Colors.amber.withOpacity(0.2),
+                    color: Colors.amber.withValues(alpha: 0.2),
                     borderRadius: BorderRadius.circular(20),
                   ),
                   child: Text(
@@ -60,7 +64,9 @@ class GoalCard extends ConsumerWidget {
                 return GestureDetector(
                   onTap: () {
                     // ViewModel에게 체크 토글 요청
-                    ref.read(goalViewModelProvider.notifier).toggleCheck(goal.id, index);
+                    ref
+                        .read(goalViewModelProvider.notifier)
+                        .toggleCheck(goal.id, index);
                   },
                   child: Column(
                     children: [
@@ -74,10 +80,10 @@ class GoalCard extends ConsumerWidget {
                           boxShadow: isChecked
                               ? [
                                   BoxShadow(
-                                    color: Colors.blue.withOpacity(0.4),
+                                    color: Colors.blue.withValues(alpha: 0.4),
                                     blurRadius: 8,
                                     offset: const Offset(0, 4),
-                                  )
+                                  ),
                                 ]
                               : [],
                         ),
