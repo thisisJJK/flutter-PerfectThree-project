@@ -1,0 +1,8 @@
+{
+  "appName": "Perfect Three",
+  "homeTitle": "나의 목표",
+  "btnCheck": "완료",
+  "btnAddGoal": "목표 만들기",
+  "msgSuccess": "성공했습니다!",
+  "msgReset": "3일 성공! 다시 시작합니다."
+}
