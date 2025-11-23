@@ -139,7 +139,6 @@ void _showDeleteDialog(BuildContext context, WidgetRef ref, Goal goal) async {
                     child: Text(
                       '취소',
                       style: textTheme.bodyMedium!.copyWith(
-                        color: Colors.white,
                         fontWeight: FontWeight.w500,
                       ),
                     ),

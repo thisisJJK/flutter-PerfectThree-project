@@ -25,7 +25,7 @@ class GoalCard extends ConsumerWidget {
       ),
 
       color: isGoalCompleted
-          ? colorScheme.primaryContainer.withValues(alpha:  0.4)
+          ? colorScheme.primaryContainer.withValues(alpha: 0.4)
           : Theme.of(context).cardColor,
 
       elevation: 0,
@@ -57,7 +57,9 @@ class GoalCard extends ConsumerWidget {
                     vertical: AppSpacing.xs,
                   ),
                   decoration: BoxDecoration(
-                    color: colorScheme.secondaryContainer.withValues(alpha: 0.5),
+                    color: colorScheme.secondaryContainer.withValues(
+                      alpha: 0.5,
+                    ),
                     borderRadius: BorderRadius.circular(16),
                   ),
                   child: Text(
@@ -83,7 +85,7 @@ class GoalCard extends ConsumerWidget {
                     ref
                         .read(goalViewModelProvider.notifier)
                         .toggleCheck(goal, index);
-                    if (index == 2 && !isChecked) {
+                    if (index == 2 && !isChecked && goal.checks[1] == true) {
                       //재도전 여부 다이얼로그
                       _showRetryDialog(context, ref, goal);
                     }
@@ -96,14 +98,15 @@ class GoalCard extends ConsumerWidget {
                         height: 48,
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
-
                           color: isChecked
                               ? colorScheme.primary
                               : colorScheme.surfaceContainerHigh,
                           boxShadow: isChecked
                               ? [
                                   BoxShadow(
-                                    color: colorScheme.primary.withValues(alpha:  0.3),
+                                    color: colorScheme.primary.withValues(
+                                      alpha: 0.3,
+                                    ),
                                     blurRadius: 8,
                                     offset: const Offset(0, 3),
                                   ),
@@ -115,7 +118,9 @@ class GoalCard extends ConsumerWidget {
 
                           color: isChecked
                               ? colorScheme.onPrimary
-                              : colorScheme.onSurfaceVariant.withValues(alpha:  0.4),
+                              : colorScheme.onSurfaceVariant.withValues(
+                                  alpha: 0.4,
+                                ),
                           size: 26,
                         ),
                       ),
@@ -159,6 +164,7 @@ void _showRetryDialog(BuildContext context, WidgetRef ref, Goal goal) async {
               GestureDetector(
                 onTap: () {
                   //리셋
+                  ref.read(goalViewModelProvider.notifier).resetGoal(goal);
                   context.pop();
                 },
                 child: Container(
@@ -170,7 +176,7 @@ void _showRetryDialog(BuildContext context, WidgetRef ref, Goal goal) async {
                   ),
                   child: Center(
                     child: Text(
-                      '도전',
+                      '재도전',
                       style: textTheme.bodyMedium!.copyWith(
                         fontWeight: FontWeight.bold,
                       ),
@@ -180,6 +186,8 @@ void _showRetryDialog(BuildContext context, WidgetRef ref, Goal goal) async {
               ),
               GestureDetector(
                 onTap: () {
+                  //삭제
+                  ref.read(goalViewModelProvider.notifier).deleteGoal(goal.id);
                   context.pop();
                 },
                 child: Container(
@@ -194,9 +202,8 @@ void _showRetryDialog(BuildContext context, WidgetRef ref, Goal goal) async {
                   ),
                   child: Center(
                     child: Text(
-                      '취소',
+                      '끝내기',
                       style: textTheme.bodyMedium!.copyWith(
-                        color: Colors.white,
                         fontWeight: FontWeight.w500,
                       ),
                     ),

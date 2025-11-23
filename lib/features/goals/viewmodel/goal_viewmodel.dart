@@ -15,14 +15,10 @@ part 'goal_viewmodel.g.dart';
 class GoalViewModel extends _$GoalViewModel {
   late GoalRepository _repository;
 
-  /// 1. 초기화 (build)
-  /// 앱이 시작되거나 이 화면이 로드될 때 실행됩니다.
   @override
   Future<List<Goal>> build() async {
-    // Repository를 가져옵니다.
     _repository = ref.watch(goalRepositoryProvider);
 
-    // 저장된 목표들을 불러옵니다.
     List<Goal> goals = await _repository.getGoals();
 
     return goals;
@@ -50,8 +46,6 @@ class GoalViewModel extends _$GoalViewModel {
     }
   }
 
-  /// 3. 체크박스 토글 (Update)
-  /// [dayIndex]: 0 (1일차), 1 (2일차), 2 (3일차)
   Future<void> toggleCheck(Goal currentGoal, int dayIndex) async {
     // 현재 상태가 데이터가 아니면 무시
     if (!state.hasValue) return;
@@ -59,7 +53,6 @@ class GoalViewModel extends _$GoalViewModel {
     final now = DateTime.now();
 
     try {
-      // 체크 상태 변경 (불변성 유지를 위해 복사본 생성)
       List<bool> newChecks = List.from(currentGoal.checks);
       int newSuccessCount = currentGoal.successCount;
 
@@ -72,26 +65,15 @@ class GoalViewModel extends _$GoalViewModel {
       } else if (dayIndex == 2 &&
           newChecks[0] == true &&
           newChecks[1] == true) {
-        if (newChecks[2] == false) newSuccessCount++;
-        if (newChecks[2] == true) newSuccessCount--;
         newChecks[dayIndex] = !newChecks[dayIndex];
-
-        //
       }
-
-      // 업데이트된 목표 객체 생성
       final updatedGoal = currentGoal.copyWith(
         checks: newChecks,
-
         successCount: newSuccessCount,
         lastUpdatedDate: now,
       );
-
       // DB 저장
       await _repository.saveGoal(updatedGoal);
-
-      // 중요: 로컬 상태만 즉시 업데이트 (UI 반응 속도를 위해)
-      // 리스트에서 해당 목표만 교체하여 새로운 리스트 생성
       final currentGoals = state.value!;
       final goalIndex = currentGoals.indexWhere((g) => g.id == currentGoal.id);
       final newGoalList = List<Goal>.from(currentGoals);
@@ -107,12 +89,9 @@ class GoalViewModel extends _$GoalViewModel {
     }
   }
 
-  /// 4. 목표 삭제 (Delete)
   Future<void> deleteGoal(String goalId) async {
     try {
       await _repository.deleteGoal(goalId);
-
-      // 상태에서 해당 목표 제거 (UI 즉시 반영)
       if (state.hasValue) {
         final newGoalList = state.value!.where((g) => g.id != goalId).toList();
         state = AsyncValue.data(newGoalList);
@@ -120,6 +99,28 @@ class GoalViewModel extends _$GoalViewModel {
       CustomLogger.info("목표 삭제됨: $goalId");
     } catch (e, stackTrace) {
       CustomLogger.error("목표 삭제 실패", e, stackTrace);
+    }
+  }
+
+  Future<void> resetGoal(Goal goal) async {
+    try {
+      final updatedGoal = goal.copyWith(
+        checks: [false, false, false],
+        successCount: goal.successCount + 1,
+        lastUpdatedDate: DateTime.now(),
+      );
+      // DB 저장
+      await _repository.saveGoal(updatedGoal);
+      final currentGoals = state.value!;
+      final goalIndex = currentGoals.indexWhere((g) => g.id == goal.id);
+      final newGoalList = List<Goal>.from(currentGoals);
+      newGoalList[goalIndex] = updatedGoal;
+
+      state = AsyncValue.data(newGoalList);
+
+      CustomLogger.debug("리셋 완료: ${updatedGoal.title}}");
+    } catch (e, stackTrace) {
+      CustomLogger.error("리셋 실패", e, stackTrace);
     }
   }
 }
