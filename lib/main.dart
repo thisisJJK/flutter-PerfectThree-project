@@ -6,7 +6,7 @@ import 'package:perfect_three/core/theme/provider/theme_provider.dart';
 import 'package:perfect_three/data/models/goal.dart';
 import 'package:perfect_three/routes/app_router.dart';
 
-import 'core/utils/logger.dart';
+import 'core/utils/custom_logger.dart';
 
 /// 앱의 시작점입니다.
 void main() async {

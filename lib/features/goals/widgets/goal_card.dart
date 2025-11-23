@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:perfect_three/core/theme/app_spacing.dart';
 import 'package:perfect_three/features/goals/viewmodel/goal_viewmodel.dart';
 
@@ -24,7 +25,7 @@ class GoalCard extends ConsumerWidget {
       ),
 
       color: isGoalCompleted
-          ? colorScheme.primaryContainer.withOpacity(0.4)
+          ? colorScheme.primaryContainer.withValues(alpha:  0.4)
           : Theme.of(context).cardColor,
 
       elevation: 0,
@@ -56,11 +57,11 @@ class GoalCard extends ConsumerWidget {
                     vertical: AppSpacing.xs,
                   ),
                   decoration: BoxDecoration(
-                    color: colorScheme.secondaryContainer.withOpacity(0.5),
+                    color: colorScheme.secondaryContainer.withValues(alpha: 0.5),
                     borderRadius: BorderRadius.circular(16),
                   ),
                   child: Text(
-                    "🔥연속 ${goal.successCount}회",
+                    "🔥누적 ${goal.successCount}회",
 
                     style: textTheme.labelLarge!.copyWith(
                       color: colorScheme.onSecondaryContainer,
@@ -81,7 +82,11 @@ class GoalCard extends ConsumerWidget {
                   onTap: () {
                     ref
                         .read(goalViewModelProvider.notifier)
-                        .toggleCheck(goal.id, index);
+                        .toggleCheck(goal, index);
+                    if (index == 2 && !isChecked) {
+                      //재도전 여부 다이얼로그
+                      _showRetryDialog(context, ref, goal);
+                    }
                   },
                   child: Column(
                     children: [
@@ -98,7 +103,7 @@ class GoalCard extends ConsumerWidget {
                           boxShadow: isChecked
                               ? [
                                   BoxShadow(
-                                    color: colorScheme.primary.withOpacity(0.3),
+                                    color: colorScheme.primary.withValues(alpha:  0.3),
                                     blurRadius: 8,
                                     offset: const Offset(0, 3),
                                   ),
@@ -110,7 +115,7 @@ class GoalCard extends ConsumerWidget {
 
                           color: isChecked
                               ? colorScheme.onPrimary
-                              : colorScheme.onSurfaceVariant.withOpacity(0.4),
+                              : colorScheme.onSurfaceVariant.withValues(alpha:  0.4),
                           size: 26,
                         ),
                       ),
@@ -132,4 +137,76 @@ class GoalCard extends ConsumerWidget {
       ),
     );
   }
+}
+
+void _showRetryDialog(BuildContext context, WidgetRef ref, Goal goal) async {
+  final colorScheme = Theme.of(context).colorScheme;
+  final textTheme = Theme.of(context).textTheme;
+
+  return showDialog(
+    barrierDismissible: false,
+    context: context,
+    builder: (BuildContext context) {
+      final double width = 110;
+      final double height = 45;
+      return AlertDialog(
+        title: Text('Perfect Three 성공!'),
+        content: Text('습관이 될 때까지 계속 도전해보세요!'),
+        actions: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              GestureDetector(
+                onTap: () {
+                  //리셋
+                  context.pop();
+                },
+                child: Container(
+                  width: width,
+                  height: height,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(12),
+                    color: colorScheme.primaryContainer,
+                  ),
+                  child: Center(
+                    child: Text(
+                      '도전',
+                      style: textTheme.bodyMedium!.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              GestureDetector(
+                onTap: () {
+                  context.pop();
+                },
+                child: Container(
+                  width: width,
+                  height: height,
+                  decoration: BoxDecoration(
+                    border: Border.all(
+                      width: 0.2,
+                      color: colorScheme.onSurface,
+                    ),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Center(
+                    child: Text(
+                      '취소',
+                      style: textTheme.bodyMedium!.copyWith(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ],
+      );
+    },
+  );
 }

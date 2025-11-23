@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:perfect_three/features/goals/viewmodel/goal_viewmodel.dart';
 
-import '../../core/utils/logger.dart';
+import '../../core/utils/custom_logger.dart';
 
 class SplashScreen extends ConsumerWidget {
   const SplashScreen({super.key});
@@ -61,7 +61,7 @@ class SplashScreen extends ConsumerWidget {
               "3일, 작은 성공이 만드는 큰 습관",
               style: TextStyle(
                 fontSize: 14,
-                color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
+                color: Theme.of(context).colorScheme.onSurface.withValues(alpha:  0.7),
               ),
             ),
             const SizedBox(height: 60),

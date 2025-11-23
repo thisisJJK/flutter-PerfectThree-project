@@ -22,14 +22,13 @@ class GoalAdapter extends TypeAdapter<Goal> {
       checks: (fields[2] as List).cast<bool>(),
       successCount: fields[3] as int,
       lastUpdatedDate: fields[4] as DateTime,
-      colorIndex: fields[5] as int,
     );
   }
 
   @override
   void write(BinaryWriter writer, Goal obj) {
     writer
-      ..writeByte(6)
+      ..writeByte(5)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -39,9 +38,7 @@ class GoalAdapter extends TypeAdapter<Goal> {
       ..writeByte(3)
       ..write(obj.successCount)
       ..writeByte(4)
-      ..write(obj.lastUpdatedDate)
-      ..writeByte(5)
-      ..write(obj.colorIndex);
+      ..write(obj.lastUpdatedDate);
   }
 
   @override

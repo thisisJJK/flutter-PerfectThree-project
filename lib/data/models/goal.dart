@@ -1,6 +1,5 @@
 import 'package:hive/hive.dart';
 
-// 이 코드는 'goal.g.dart'라는 파일을 자동으로 만들어낸다는 뜻입니다.
 part 'goal.g.dart';
 
 /// [Goal]
@@ -24,8 +23,6 @@ class Goal extends HiveObject {
   @HiveField(4)
   DateTime lastUpdatedDate; // 마지막으로 체크한 날짜
 
-  @HiveField(5)
-  int colorIndex; // 목표 색상 인덱스 (선택 사항)
 
   Goal({
     required this.id,
@@ -33,18 +30,18 @@ class Goal extends HiveObject {
     required this.checks,
     this.successCount = 0,
     required this.lastUpdatedDate,
-    this.colorIndex = 0,
+
   });
 
   /// 초기 목표 생성을 위한 팩토리 메서드
-  factory Goal.create({required String id, required String title, int colorIndex = 0}) {
+  factory Goal.create({required String id, required String title,}) {
     return Goal(
       id: id,
       title: title,
       checks: [false, false, false], // 처음엔 모두 미달성
       successCount: 0,
       lastUpdatedDate: DateTime.now(),
-      colorIndex: colorIndex,
+     
     );
   }
 
@@ -54,7 +51,7 @@ class Goal extends HiveObject {
     List<bool>? checks,
     int? successCount,
     DateTime? lastUpdatedDate,
-    int? colorIndex,
+
   }) {
     return Goal(
       id: id, // ID는 변경 불가
@@ -62,7 +59,7 @@ class Goal extends HiveObject {
       checks: checks ?? this.checks,
       successCount: successCount ?? this.successCount,
       lastUpdatedDate: lastUpdatedDate ?? this.lastUpdatedDate,
-      colorIndex: colorIndex ?? this.colorIndex,
+      
     );
   }
 }

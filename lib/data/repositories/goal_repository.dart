@@ -1,8 +1,9 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:perfect_three/core/utils/app_error.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-import '../../core/utils/logger.dart';
+import '../../core/utils/custom_logger.dart';
 import '../models/goal.dart';
 
 part 'goal_repository.g.dart';
@@ -14,18 +15,26 @@ class GoalRepository {
 
   // Hive Box를 엽니다. (앱 시작 시 초기화 필요)
   Future<Box<Goal>> _openBox() async {
-    if (!Hive.isBoxOpen(boxName)) {
-      return await Hive.openBox<Goal>(boxName);
+    try {
+      if (!Hive.isBoxOpen(boxName)) {
+        return await Hive.openBox<Goal>(boxName);
+      }
+      return Hive.box<Goal>(boxName);
+    } catch (e, stackTrace) {
+      CustomLogger.error("Hive Box 열기 실패", e, stackTrace);
+      throw DatabaseError(code: 'DB_OPEN_FAILED', message: '데이터베이스를 열 수 없습니다.');
     }
-    return Hive.box<Goal>(boxName);
   }
 
   /// 모든 목표 가져오기
   Future<List<Goal>> getGoals() async {
     try {
       final box = await _openBox();
-      // 리스트로 변환하여 반환
-      return box.values.toList();
+      final goals = box.values.toList();
+
+      CustomLogger.info("모든 목표를 성공적으로 로드했습니다.");
+
+      return goals;
     } catch (e, stackTrace) {
       CustomLogger.error("목표 불러오기 실패", e, stackTrace);
       return [];

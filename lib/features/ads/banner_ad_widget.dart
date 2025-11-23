@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import '../../core/utils/ad_helper.dart';
-import '../../core/utils/logger.dart';
+import '../../core/utils/custom_logger.dart';
 
 class BottomBannerAd extends StatefulWidget {
   const BottomBannerAd({super.key});
@@ -34,7 +34,7 @@ class _BottomBannerAdState extends State<BottomBannerAd> {
           CustomLogger.info("배너 광고 로드 성공");
         },
         onAdFailedToLoad: (ad, err) {
-          CustomLogger.warning("배너 광고 로드 실패: ${err.message}");
+          CustomLogger.warn("배너 광고 로드 실패: ${err.message}");
           ad.dispose();
         },
       ),
