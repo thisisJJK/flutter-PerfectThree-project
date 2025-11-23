@@ -36,10 +36,11 @@ class AppTheme {
       foregroundColor: AppColors.textPrimaryDark,
     ),
     textTheme: const TextTheme(
-      bodyLarge: AppTypography.body,  // 폰트 색상은 위 AppColors를 참조해서 다크 대응
+      bodyLarge: AppTypography.body, // 폰트 색상은 위 AppColors를 참조해서 다크 대응
       bodyMedium: AppTypography.body,
       bodySmall: AppTypography.caption,
     ),
+    elevatedButtonTheme: ElevatedButtonThemeData(),
     cardColor: AppColors.cardDark,
     dividerColor: AppColors.dividerDark,
     useMaterial3: true,

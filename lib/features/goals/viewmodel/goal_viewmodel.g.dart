@@ -6,7 +6,7 @@ part of 'goal_viewmodel.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$goalViewModelHash() => r'b8194518f33b8530698e530d4aeac0a819bb76a7';
+String _$goalViewModelHash() => r'59d716ff1e8958276b48d53a61e26f12ae10781c';
 
 /// [GoalViewModel]
 /// 목표 리스트의 상태를 관리하고, 핵심 비즈니스 로직(3일 체크, 리셋 등)을 수행합니다.

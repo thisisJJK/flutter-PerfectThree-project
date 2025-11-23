@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:perfect_three/core/theme/app_colors.dart';
 import 'package:perfect_three/core/theme/app_spacing.dart';
+import 'package:perfect_three/features/goals/viewmodel/goal_viewmodel.dart';
 
-import '../../../data/models/goal.dart';
-import '../viewmodel/goal_viewmodel.dart';
+import '../../../../data/models/goal.dart';
 
 class GoalCard extends ConsumerWidget {
   final Goal goal;
@@ -13,36 +12,42 @@ class GoalCard extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final theme = Theme.of(context);
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+
+    final isGoalCompleted = goal.checks.every((c) => c);
 
     return Card(
       margin: const EdgeInsets.symmetric(
         vertical: AppSpacing.sm,
         horizontal: AppSpacing.md,
       ),
-      elevation: 0, // Material3에서는 elevation보다 shadow 효과로 대체 권장
+
+      color: isGoalCompleted
+          ? colorScheme.primaryContainer.withOpacity(0.4)
+          : Theme.of(context).cardColor,
+
+      elevation: 0,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(AppSpacing.radius),
       ),
-      color: theme.cardColor,
+
       child: Padding(
         padding: const EdgeInsets.all(AppSpacing.md),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // ------------------------------
-            // 1. 상단: 제목 + 성공 카운터
-            // ------------------------------
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Expanded(
                   child: Text(
                     goal.title,
-                    style: theme.textTheme.bodyLarge?.copyWith(
-                      fontWeight: FontWeight.w600,
-                    ),
                     overflow: TextOverflow.ellipsis,
+
+                    style: textTheme.bodyLarge!.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
                 Container(
@@ -51,14 +56,15 @@ class GoalCard extends ConsumerWidget {
                     vertical: AppSpacing.xs,
                   ),
                   decoration: BoxDecoration(
-                    color: AppColors.primary.withOpacity(0.12),
-                    borderRadius: BorderRadius.circular(20),
+                    color: colorScheme.secondaryContainer.withOpacity(0.5),
+                    borderRadius: BorderRadius.circular(16),
                   ),
                   child: Text(
-                    "🏆 ${goal.successCount}회",
-                    style: theme.textTheme.bodySmall?.copyWith(
+                    "🔥연속 ${goal.successCount}회",
+
+                    style: textTheme.labelLarge!.copyWith(
+                      color: colorScheme.onSecondaryContainer,
                       fontWeight: FontWeight.w600,
-                      color: AppColors.primary,
                     ),
                   ),
                 ),
@@ -66,10 +72,6 @@ class GoalCard extends ConsumerWidget {
             ),
 
             const SizedBox(height: AppSpacing.md),
-
-            // ------------------------------
-            // 2. 3일 체크 버튼 영역
-            // ------------------------------
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: List.generate(3, (index) {
@@ -78,8 +80,8 @@ class GoalCard extends ConsumerWidget {
                 return GestureDetector(
                   onTap: () {
                     ref
-                      .read(goalViewModelProvider.notifier)
-                      .toggleCheck(goal.id, index);
+                        .read(goalViewModelProvider.notifier)
+                        .toggleCheck(goal.id, index);
                   },
                   child: Column(
                     children: [
@@ -89,13 +91,14 @@ class GoalCard extends ConsumerWidget {
                         height: 48,
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
+
                           color: isChecked
-                              ? AppColors.primary
-                              : theme.dividerColor.withOpacity(0.2),
+                              ? colorScheme.primary
+                              : colorScheme.surfaceContainerHigh,
                           boxShadow: isChecked
                               ? [
                                   BoxShadow(
-                                    color: AppColors.primary.withOpacity(0.3),
+                                    color: colorScheme.primary.withOpacity(0.3),
                                     blurRadius: 8,
                                     offset: const Offset(0, 3),
                                   ),
@@ -104,20 +107,19 @@ class GoalCard extends ConsumerWidget {
                         ),
                         child: Icon(
                           Icons.check,
+
                           color: isChecked
-                              ? Colors.white
-                              : theme.disabledColor,
+                              ? colorScheme.onPrimary
+                              : colorScheme.onSurfaceVariant.withOpacity(0.4),
                           size: 26,
                         ),
                       ),
                       const SizedBox(height: AppSpacing.xs),
                       Text(
                         "Day ${index + 1}",
-                        style: theme.textTheme.bodySmall?.copyWith(
-                          color: isChecked
-                              ? AppColors.primary
-                              : theme.textTheme.bodySmall!.color!.withOpacity(0.6),
-                          fontWeight: FontWeight.w500,
+
+                        style: textTheme.labelMedium!.copyWith(
+                          color: colorScheme.onSurfaceVariant,
                         ),
                       ),
                     ],
@@ -131,4 +133,3 @@ class GoalCard extends ConsumerWidget {
     );
   }
 }
-

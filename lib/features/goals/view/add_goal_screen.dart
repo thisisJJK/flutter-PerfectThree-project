@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:perfect_three/core/theme/app_colors.dart';
 import 'package:perfect_three/core/theme/app_typography.dart';
 import 'package:perfect_three/features/ads/banner_ad_widget.dart';
 import 'package:perfect_three/features/goals/viewmodel/goal_viewmodel.dart';
@@ -52,7 +51,6 @@ class _AddGoalScreenState extends ConsumerState<AddGoalScreen> {
                   borderRadius: BorderRadius.circular(12),
                 ),
                 filled: true,
-                fillColor: AppColors.background,
               ),
               onSubmitted: (_) => _saveGoal(), // 엔터 치면 저장
             ),
@@ -61,8 +59,7 @@ class _AddGoalScreenState extends ConsumerState<AddGoalScreen> {
               onPressed: _saveGoal,
               style: ElevatedButton.styleFrom(
                 padding: const EdgeInsets.symmetric(vertical: 16),
-                backgroundColor: AppColors.primary,
-                foregroundColor: AppColors.textPrimary,
+
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
                 ),
