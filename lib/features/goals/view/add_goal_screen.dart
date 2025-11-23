@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:perfect_three/core/theme/app_colors.dart';
+import 'package:perfect_three/core/theme/app_typography.dart';
+import 'package:perfect_three/features/ads/banner_ad_widget.dart';
 import 'package:perfect_three/features/goals/viewmodel/goal_viewmodel.dart';
-
 
 class AddGoalScreen extends ConsumerStatefulWidget {
   const AddGoalScreen({super.key});
@@ -25,7 +27,7 @@ class _AddGoalScreenState extends ConsumerState<AddGoalScreen> {
 
     // ViewModel에 추가 요청
     ref.read(goalViewModelProvider.notifier).addGoal(_textController.text);
-    
+
     // 이전 화면으로 복귀
     context.pop();
   }
@@ -39,21 +41,18 @@ class _AddGoalScreenState extends ConsumerState<AddGoalScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            const Text(
-              "어떤 습관을 만들고 싶나요?",
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-            ),
+            const Text("어떤 습관을 만들고 싶나요?", style: AppTypography.title),
             const SizedBox(height: 16),
             TextField(
               controller: _textController,
-              autofocus: true, // 화면 열리자마자 키보드 올라오게
+              autofocus: false,
               decoration: InputDecoration(
                 hintText: "예: 물 마시기, 독서 10분",
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
                 ),
                 filled: true,
-                fillColor: Colors.grey[100],
+                fillColor: AppColors.background,
               ),
               onSubmitted: (_) => _saveGoal(), // 엔터 치면 저장
             ),
@@ -62,16 +61,19 @@ class _AddGoalScreenState extends ConsumerState<AddGoalScreen> {
               onPressed: _saveGoal,
               style: ElevatedButton.styleFrom(
                 padding: const EdgeInsets.symmetric(vertical: 16),
-                backgroundColor: Colors.blue,
-                foregroundColor: Colors.white,
+                backgroundColor: AppColors.primary,
+                foregroundColor: AppColors.textPrimary,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
                 ),
               ),
-              child: const Text("저장하기", style: TextStyle(fontSize: 16)),
+              child: const Text("저장하기", style: AppTypography.body),
             ),
           ],
         ),
+      ),
+      bottomNavigationBar: SafeArea(
+        child: SizedBox(height: 60, child: BottomBannerAd()),
       ),
     );
   }

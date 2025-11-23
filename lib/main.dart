@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:perfect_three/core/theme/theme_provider.dart';
 import 'package:perfect_three/data/models/goal.dart';
 import 'package:perfect_three/routes/app_router.dart';
 
@@ -33,16 +34,13 @@ class MyApp extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     // 라우터 설정 가져오기
     final router = ref.watch(appRouterProvider);
+    final themeMode = ref.watch(themeProvider);
     return MaterialApp.router(
       routerConfig: router,
       title: 'Perfect Three', // 앱 이름 (나중에 Localization 적용 예정)
-      theme: ThemeData(
-        // 테마 색상 설정 (브랜드 컬러)
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
-        useMaterial3: true,
-        fontFamily: 'Pretendard', // (폰트는 나중에 추가 설정)
-        scaffoldBackgroundColor: Colors.grey[50],
-      ),
+      themeMode: themeMode,
+      theme: ThemeData.light(),
+      darkTheme: ThemeData.dark(),
 
       // 임시 홈 화면 (다음 단계에서 라우터로 교체 예정)
       // 임시 테스트용 코드

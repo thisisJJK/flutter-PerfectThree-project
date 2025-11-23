@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:perfect_three/core/theme/app_colors.dart';
+import 'package:perfect_three/core/theme/app_spacing.dart';
 
 import '../../../data/models/goal.dart';
 import '../viewmodel/goal_viewmodel.dart';
@@ -11,96 +13,110 @@ class GoalCard extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final theme = Theme.of(context);
+
     return Card(
-      margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-      elevation: 2, // 살짝 떠있는 효과
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      margin: const EdgeInsets.symmetric(
+        vertical: AppSpacing.sm,
+        horizontal: AppSpacing.md,
+      ),
+      elevation: 0, // Material3에서는 elevation보다 shadow 효과로 대체 권장
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(AppSpacing.radius),
+      ),
+      color: theme.cardColor,
       child: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(AppSpacing.md),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // 1. 상단: 제목 및 성공 카운트
+            // ------------------------------
+            // 1. 상단: 제목 + 성공 카운터
+            // ------------------------------
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Expanded(
                   child: Text(
                     goal.title,
-                    style: const TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
+                    style: theme.textTheme.bodyLarge?.copyWith(
+                      fontWeight: FontWeight.w600,
                     ),
                     overflow: TextOverflow.ellipsis,
                   ),
                 ),
                 Container(
                   padding: const EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 6,
+                    horizontal: AppSpacing.sm,
+                    vertical: AppSpacing.xs,
                   ),
                   decoration: BoxDecoration(
-                    color: Colors.amber.withValues(alpha: 0.2),
+                    color: AppColors.primary.withOpacity(0.12),
                     borderRadius: BorderRadius.circular(20),
                   ),
                   child: Text(
-                    "🏆 ${goal.successCount}회 성공",
-                    style: const TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.orange,
+                    "🏆 ${goal.successCount}회",
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      fontWeight: FontWeight.w600,
+                      color: AppColors.primary,
                     ),
                   ),
                 ),
               ],
             ),
-            const SizedBox(height: 16),
 
-            // 2. 하단: 3일 체크 버튼 (Day 1, 2, 3)
+            const SizedBox(height: AppSpacing.md),
+
+            // ------------------------------
+            // 2. 3일 체크 버튼 영역
+            // ------------------------------
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: List.generate(3, (index) {
                 final isChecked = goal.checks[index];
+
                 return GestureDetector(
                   onTap: () {
-                    // ViewModel에게 체크 토글 요청
                     ref
-                        .read(goalViewModelProvider.notifier)
-                        .toggleCheck(goal.id, index);
+                      .read(goalViewModelProvider.notifier)
+                      .toggleCheck(goal.id, index);
                   },
                   child: Column(
                     children: [
                       AnimatedContainer(
-                        duration: const Duration(milliseconds: 200),
+                        duration: const Duration(milliseconds: 180),
                         width: 48,
                         height: 48,
                         decoration: BoxDecoration(
-                          color: isChecked ? Colors.blue : Colors.grey[200],
                           shape: BoxShape.circle,
+                          color: isChecked
+                              ? AppColors.primary
+                              : theme.dividerColor.withOpacity(0.2),
                           boxShadow: isChecked
                               ? [
                                   BoxShadow(
-                                    color: Colors.blue.withValues(alpha: 0.4),
+                                    color: AppColors.primary.withOpacity(0.3),
                                     blurRadius: 8,
-                                    offset: const Offset(0, 4),
+                                    offset: const Offset(0, 3),
                                   ),
                                 ]
                               : [],
                         ),
-                        child: Center(
-                          child: Icon(
-                            Icons.check,
-                            color: isChecked ? Colors.white : Colors.grey[400],
-                            size: 28,
-                          ),
+                        child: Icon(
+                          Icons.check,
+                          color: isChecked
+                              ? Colors.white
+                              : theme.disabledColor,
+                          size: 26,
                         ),
                       ),
-                      const SizedBox(height: 8),
+                      const SizedBox(height: AppSpacing.xs),
                       Text(
                         "Day ${index + 1}",
-                        style: TextStyle(
-                          color: isChecked ? Colors.blue : Colors.grey,
-                          fontSize: 12,
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: isChecked
+                              ? AppColors.primary
+                              : theme.textTheme.bodySmall!.color!.withOpacity(0.6),
                           fontWeight: FontWeight.w500,
                         ),
                       ),
@@ -115,3 +131,4 @@ class GoalCard extends ConsumerWidget {
     );
   }
 }
+

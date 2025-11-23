@@ -66,7 +66,22 @@ class GoalViewModel extends _$GoalViewModel {
 
       // 체크 상태 변경 (불변성 유지를 위해 복사본 생성)
       List<bool> newChecks = List.from(targetGoal.checks);
-      newChecks[dayIndex] = !newChecks[dayIndex]; // 토글 (true <-> false)
+
+      if (dayIndex == 2 &&
+          newChecks[dayIndex - 1] == true &&
+          newChecks[dayIndex - 2] == true) {
+        newChecks[dayIndex] = !newChecks[dayIndex]; // 토글 (true <-> false)
+      } else if (dayIndex == 2 &&
+          newChecks[dayIndex - 1] == false &&
+          newChecks[dayIndex - 2] == false) {
+        return;
+      } else if (newChecks[dayIndex + 1] == false) {
+        if (dayIndex == 0 || dayIndex > 0 && newChecks[dayIndex - 1] == true) {
+          newChecks[dayIndex] = !newChecks[dayIndex]; // 토글 (true <-> false)
+        } else {
+          return;
+        }
+      }
 
       // 업데이트된 목표 객체 생성
       final updatedGoal = targetGoal.copyWith(
@@ -112,6 +127,7 @@ class GoalViewModel extends _$GoalViewModel {
   /// [핵심 로직] 날짜 변경 및 3일 리셋 체크
   /// 앱 실행 시 호출되어, "3일 다 채운 목표"가 "다음 날"이 되었는지 확인합니다.
   Future<List<Goal>> _checkDailyReset(List<Goal> goals) async {
+    // ignore: unused_local_variable
     bool listChanged = false;
     List<Goal> processedGoals = [];
     final now = DateTime.now();

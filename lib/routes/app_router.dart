@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:perfect_three/features/settings/view/settings_screen.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../features/goals/view/add_goal_screen.dart';
@@ -25,6 +26,11 @@ GoRouter appRouter(AppRouterRef ref) {
             path: 'add',
             name: 'add_goal',
             builder: (context, state) => const AddGoalScreen(),
+          ),
+          GoRoute(
+            path: 'settings',
+            name: 'settings',
+            builder: (context, state) => const SettingsScreen(),
           ),
         ],
       ),
