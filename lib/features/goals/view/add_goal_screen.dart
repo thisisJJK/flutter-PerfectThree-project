@@ -17,17 +17,14 @@ class _AddGoalScreenState extends ConsumerState<AddGoalScreen> {
 
   @override
   void dispose() {
-    _textController.dispose(); // 메모리 누수 방지
+    _textController.dispose();
     super.dispose();
   }
 
   void _saveGoal() {
     if (_textController.text.isEmpty) return;
 
-    // ViewModel에 추가 요청
     ref.read(goalViewModelProvider.notifier).addGoal(_textController.text);
-
-    // 이전 화면으로 복귀
     context.pop();
   }
 
@@ -52,7 +49,6 @@ class _AddGoalScreenState extends ConsumerState<AddGoalScreen> {
                 ),
                 filled: true,
               ),
-              onSubmitted: (_) => _saveGoal(), // 엔터 치면 저장
             ),
             const SizedBox(height: 24),
             ElevatedButton(

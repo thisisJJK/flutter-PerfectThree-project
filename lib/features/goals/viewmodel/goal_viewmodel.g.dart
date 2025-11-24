@@ -6,7 +6,7 @@ part of 'goal_viewmodel.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$goalViewModelHash() => r'12fdaa3f97a150d85739d7fce172b848793617ad';
+String _$goalViewModelHash() => r'363ce290eac0e6c10ab7f8e694d11c16a4e52a6a';
 
 /// See also [GoalViewModel].
 @ProviderFor(GoalViewModel)

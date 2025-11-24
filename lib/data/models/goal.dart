@@ -24,8 +24,12 @@ class Goal extends HiveObject {
 
   @HiveField(5)
   bool isOngoing; // 진행중인지
+
   @HiveField(6)
   int sortOrder; // 순서 정렬용
+
+  @HiveField(7)
+  DateTime createdAt;
 
   Goal({
     required this.id,
@@ -35,6 +39,7 @@ class Goal extends HiveObject {
     required this.lastUpdatedDate,
     required this.isOngoing,
     required this.sortOrder,
+    required this.createdAt,
   });
 
   /// 초기 목표 생성을 위한 팩토리 메서드
@@ -43,6 +48,7 @@ class Goal extends HiveObject {
     required String title,
     required bool isOngoing,
     required int sortOrder,
+    required DateTime createdAt,
   }) {
     return Goal(
       id: id,
@@ -52,6 +58,7 @@ class Goal extends HiveObject {
       lastUpdatedDate: DateTime.now(),
       isOngoing: isOngoing,
       sortOrder: sortOrder,
+      createdAt: createdAt,
     );
   }
 
@@ -63,6 +70,8 @@ class Goal extends HiveObject {
     DateTime? lastUpdatedDate,
     bool? isOngoing,
     int? sortOrder,
+    DateTime? createdAt,
+
   }) {
     return Goal(
       id: id, // ID는 변경 불가
@@ -72,6 +81,7 @@ class Goal extends HiveObject {
       lastUpdatedDate: lastUpdatedDate ?? this.lastUpdatedDate,
       isOngoing: isOngoing ?? this.isOngoing,
       sortOrder: sortOrder ?? this.sortOrder,
+      createdAt: createdAt?? this.createdAt,
     );
   }
 }

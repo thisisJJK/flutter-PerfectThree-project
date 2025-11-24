@@ -1,4 +1,3 @@
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:perfect_three/core/utils/app_error.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';

@@ -1,5 +1,6 @@
 // 파일 위치: lib/features/goals/viewmodel/goal_viewmodel.dart
 
+import 'package:perfect_three/core/utils/date_utils.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:uuid/uuid.dart';
 
@@ -32,6 +33,7 @@ class GoalViewModel extends _$GoalViewModel {
         title: title,
         isOngoing: true,
         sortOrder: 0,
+        createdAt: DateTime.now(),
       );
 
       final updated = [
@@ -55,22 +57,18 @@ class GoalViewModel extends _$GoalViewModel {
     // 현재 상태가 데이터가 아니면 무시
     if (!state.hasValue) return;
 
-    final now = DateTime.now();
-
     try {
       List<bool> newChecks = List.from(currentGoal.checks);
       int newSuccessCount = currentGoal.successCount;
 
-      if (dayIndex == 0 && newChecks[1] == false && newChecks[2] == false) {
+      final now = DateTime.now();
+      DateTime createdDay = DateUtils.dateOnly(currentGoal.createdAt);
+
+      if (DateUtils.differenceDay(now, createdDay) == dayIndex) {
         newChecks[dayIndex] = !newChecks[dayIndex];
-      } else if (dayIndex == 1 &&
-          newChecks[0] == true &&
-          newChecks[2] == false) {
-        newChecks[dayIndex] = !newChecks[dayIndex];
-      } else if (dayIndex == 2 &&
-          newChecks[0] == true &&
-          newChecks[1] == true) {
-        newChecks[dayIndex] = !newChecks[dayIndex];
+      } else {
+        CustomLogger.warn('루틴 날짜가 아님');
+        return;
       }
       final updatedGoal = currentGoal.copyWith(
         checks: newChecks,
@@ -114,6 +112,7 @@ class GoalViewModel extends _$GoalViewModel {
         checks: [false, false, false],
         successCount: goal.successCount + 1,
         lastUpdatedDate: DateTime.now(),
+        createdAt: DateTime.now(),
       );
       // DB 저장
       await _repository.saveGoal(updatedGoal);

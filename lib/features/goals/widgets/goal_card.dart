@@ -32,7 +32,12 @@ class GoalCard extends ConsumerWidget {
       ),
 
       child: Padding(
-        padding: const EdgeInsets.all(AppSpacing.md),
+        padding: const EdgeInsets.fromLTRB(
+          AppSpacing.md,
+          AppSpacing.sm,
+          AppSpacing.md,
+          AppSpacing.sm,
+        ),
         child: Column(
           children: [
             Row(
@@ -79,7 +84,7 @@ class GoalCard extends ConsumerWidget {
                   child: Text(
                     '• ${goal.title}',
                     overflow: TextOverflow.ellipsis,
-                    style: AppTypography.title,
+                    style: AppTypography.body,
                   ),
                 ),
 
@@ -105,8 +110,8 @@ class GoalCard extends ConsumerWidget {
                             children: [
                               AnimatedContainer(
                                 duration: const Duration(milliseconds: 180),
-                                width: 36,
-                                height: 36,
+                                width: 34,
+                                height: 34,
                                 decoration: BoxDecoration(
                                   shape: BoxShape.circle,
                                   color: isChecked
@@ -137,7 +142,7 @@ class GoalCard extends ConsumerWidget {
                             ],
                           ),
                         ),
-                        SizedBox(width: 6),
+                        SizedBox(width: 5),
                       ],
                     );
                   }),
