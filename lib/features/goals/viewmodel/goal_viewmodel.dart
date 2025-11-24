@@ -9,8 +9,6 @@ import '../../../core/utils/custom_logger.dart';
 
 part 'goal_viewmodel.g.dart';
 
-/// [GoalViewModel]
-/// 목표 리스트의 상태를 관리하고, 핵심 비즈니스 로직(3일 체크, 리셋 등)을 수행합니다.
 @riverpod
 class GoalViewModel extends _$GoalViewModel {
   late GoalRepository _repository;
@@ -24,18 +22,25 @@ class GoalViewModel extends _$GoalViewModel {
     return goals;
   }
 
-  /// 2. 목표 추가 (Create)
   Future<void> addGoal(String title) async {
-    state = const AsyncValue.loading(); // 로딩 상태로 변경 (UI 반응용)
+    state = const AsyncValue.loading();
 
     try {
+      final current = state.value ?? [];
       final newGoal = Goal.create(
         id: const Uuid().v4(), // 고유 ID 생성
         title: title,
+        isOngoing: true,
+        sortOrder: 0,
       );
 
+      final updated = [
+        newGoal,
+        for (var goal in current) goal.copyWith(sortOrder: goal.sortOrder + 1),
+      ];
+
       // DB에 저장
-      await _repository.saveGoal(newGoal);
+      await _repository.saveGoals(updated);
 
       // 상태 새로고침 (목록 다시 불러오기)
       ref.invalidateSelf();
@@ -74,6 +79,7 @@ class GoalViewModel extends _$GoalViewModel {
       );
       // DB 저장
       await _repository.saveGoal(updatedGoal);
+
       final currentGoals = state.value!;
       final goalIndex = currentGoals.indexWhere((g) => g.id == currentGoal.id);
       final newGoalList = List<Goal>.from(currentGoals);
@@ -122,5 +128,23 @@ class GoalViewModel extends _$GoalViewModel {
     } catch (e, stackTrace) {
       CustomLogger.error("리셋 실패", e, stackTrace);
     }
+  }
+
+  Future<void> reorder(
+    int oldIndex,
+    int newIndex,
+    List<Goal> ongoingGoals,
+  ) async {
+    if (newIndex > oldIndex) newIndex -= 1;
+    final goal = ongoingGoals.removeAt(oldIndex);
+    ongoingGoals.insert(newIndex, goal);
+
+    final updated = [
+      for (int i = 0; i < ongoingGoals.length; i++)
+        ongoingGoals[i].copyWith(sortOrder: i),
+    ];
+    await _repository.saveGoals(updated);
+
+    state = AsyncValue.data(updated);
   }
 }

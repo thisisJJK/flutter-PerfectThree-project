@@ -5,5 +5,5 @@ class AppSpacing {
   static const lg = 24.0;
   static const xl = 32.0;
 
-  static const radius = 16.0;
+  static const radius = 24.0;
 }

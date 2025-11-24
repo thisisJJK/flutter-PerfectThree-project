@@ -34,7 +34,7 @@ class _AddGoalScreenState extends ConsumerState<AddGoalScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("목표 만들기")),
+      appBar: AppBar(title: const Text("습관 만들기")),
       body: Padding(
         padding: const EdgeInsets.all(24.0),
         child: Column(

@@ -7,7 +7,6 @@ part 'goal.g.dart';
 /// Hive 데이터베이스에 저장하기 위해 @HiveType을 사용합니다.
 @HiveType(typeId: 0) // typeId는 모델마다 고유해야 합니다. (0번 할당)
 class Goal extends HiveObject {
-  
   @HiveField(0)
   final String id; // 고유 ID (UUID)
 
@@ -23,6 +22,10 @@ class Goal extends HiveObject {
   @HiveField(4)
   DateTime lastUpdatedDate; // 마지막으로 체크한 날짜
 
+  @HiveField(5)
+  bool isOngoing; // 진행중인지
+  @HiveField(6)
+  int sortOrder; // 순서 정렬용
 
   Goal({
     required this.id,
@@ -30,18 +33,25 @@ class Goal extends HiveObject {
     required this.checks,
     this.successCount = 0,
     required this.lastUpdatedDate,
-
+    required this.isOngoing,
+    required this.sortOrder,
   });
 
   /// 초기 목표 생성을 위한 팩토리 메서드
-  factory Goal.create({required String id, required String title,}) {
+  factory Goal.create({
+    required String id,
+    required String title,
+    required bool isOngoing,
+    required int sortOrder,
+  }) {
     return Goal(
       id: id,
       title: title,
       checks: [false, false, false], // 처음엔 모두 미달성
       successCount: 0,
       lastUpdatedDate: DateTime.now(),
-     
+      isOngoing: isOngoing,
+      sortOrder: sortOrder,
     );
   }
 
@@ -51,7 +61,8 @@ class Goal extends HiveObject {
     List<bool>? checks,
     int? successCount,
     DateTime? lastUpdatedDate,
-
+    bool? isOngoing,
+    int? sortOrder,
   }) {
     return Goal(
       id: id, // ID는 변경 불가
@@ -59,7 +70,8 @@ class Goal extends HiveObject {
       checks: checks ?? this.checks,
       successCount: successCount ?? this.successCount,
       lastUpdatedDate: lastUpdatedDate ?? this.lastUpdatedDate,
-      
+      isOngoing: isOngoing ?? this.isOngoing,
+      sortOrder: sortOrder ?? this.sortOrder,
     );
   }
 }

@@ -32,6 +32,8 @@ class GoalRepository {
       final box = await _openBox();
       final goals = box.values.toList();
 
+      goals.sort((a, b) => a.sortOrder.compareTo(b.sortOrder));
+
       CustomLogger.info("모든 목표를 성공적으로 로드했습니다.");
 
       return goals;
@@ -63,6 +65,19 @@ class GoalRepository {
     } catch (e, stackTrace) {
       CustomLogger.error("목표 삭제 실패", e, stackTrace);
       rethrow;
+    }
+  }
+
+  //일괄 저장 (Reorder 용도)
+  Future<void> saveGoals(List<Goal> goals) async {
+    try {
+      final box = await _openBox();
+      for (var goal in goals) {
+        await box.put(goal.id, goal);
+      }
+      CustomLogger.info("일괄 저장 완료");
+    } catch (e, stackTrace) {
+      CustomLogger.error("목표 삭제 실패", e, stackTrace);
     }
   }
 }

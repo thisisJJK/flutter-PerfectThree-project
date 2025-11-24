@@ -22,13 +22,15 @@ class GoalAdapter extends TypeAdapter<Goal> {
       checks: (fields[2] as List).cast<bool>(),
       successCount: fields[3] as int,
       lastUpdatedDate: fields[4] as DateTime,
+      isOngoing: fields[5] as bool,
+      sortOrder: fields[6] as int,
     );
   }
 
   @override
   void write(BinaryWriter writer, Goal obj) {
     writer
-      ..writeByte(5)
+      ..writeByte(7)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -38,7 +40,11 @@ class GoalAdapter extends TypeAdapter<Goal> {
       ..writeByte(3)
       ..write(obj.successCount)
       ..writeByte(4)
-      ..write(obj.lastUpdatedDate);
+      ..write(obj.lastUpdatedDate)
+      ..writeByte(5)
+      ..write(obj.isOngoing)
+      ..writeByte(6)
+      ..write(obj.sortOrder);
   }
 
   @override
