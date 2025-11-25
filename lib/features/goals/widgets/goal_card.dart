@@ -30,6 +30,9 @@ class GoalCard extends ConsumerWidget {
       elevation: elevation,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(AppSpacing.radius),
+        side: BorderSide(
+          color: colorScheme.onPrimaryContainer.withValues(alpha: 0.2),
+        ),
       ),
 
       child: Padding(
@@ -51,6 +54,20 @@ class GoalCard extends ConsumerWidget {
                   ),
                   decoration: BoxDecoration(
                     color: isDark
+                        ? colorScheme.tertiary.withValues(alpha: 0.3)
+                        : Colors.deepPurple.shade100,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Text("아침", style: AppTypography.caption),
+                ),
+                Spacer(),
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: AppSpacing.sm,
+                    vertical: AppSpacing.xs,
+                  ),
+                  decoration: BoxDecoration(
+                    color: isDark
                         ? colorScheme.inversePrimary.withValues(alpha: 0.3)
                         : colorScheme.secondaryContainer,
                     borderRadius: BorderRadius.circular(12),
@@ -60,11 +77,10 @@ class GoalCard extends ConsumerWidget {
                     style: AppTypography.caption,
                   ),
                 ),
-                Spacer(),
+                SizedBox(width: 8),
 
                 GestureDetector(
                   onTap: () {
-                    // TODO : 수정 및 삭제
                     _showDeleteDialog(context, ref, goal);
                   },
                   child: Icon(Icons.delete_outlined),
@@ -110,8 +126,8 @@ class GoalCard extends ConsumerWidget {
                             children: [
                               AnimatedContainer(
                                 duration: const Duration(milliseconds: 180),
-                                width: 34,
-                                height: 34,
+                                width: 36,
+                                height: 36,
                                 decoration: BoxDecoration(
                                   shape: BoxShape.circle,
                                   border: isChecked && isMustCheckToday
@@ -135,17 +151,25 @@ class GoalCard extends ConsumerWidget {
                                         ]
                                       : [],
                                 ),
-                                child: Icon(
-                                  Icons.check,
-
-                                  color: isChecked
-                                      ? colorScheme.onPrimary
-                                      : isMustCheckToday
-                                      ? colorScheme.onPrimaryContainer
-                                            .withValues(alpha: 0.3)
-                                      : Colors.transparent,
-                                  size: 26,
-                                ),
+                                child: isChecked
+                                    ? Icon(
+                                        Icons.check,
+                                        color: isChecked
+                                            ? colorScheme.onPrimary
+                                            : Colors.transparent,
+                                        size: 26,
+                                      )
+                                    : Center(
+                                        child: Text(
+                                          (index + 1).toString(),
+                                          style: TextStyle(
+                                            fontSize: 18,
+                                            color: colorScheme
+                                                .onPrimaryContainer
+                                                .withValues(alpha: 0.2),
+                                          ),
+                                        ),
+                                      ),
                               ),
                             ],
                           ),

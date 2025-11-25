@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:perfect_three/core/theme/app_typography.dart';
 import 'package:perfect_three/features/ads/banner_ad_widget.dart';
 import 'package:perfect_three/features/goals/viewmodel/goal_viewmodel.dart';
+import 'package:perfect_three/features/goals/widgets/category_chips.dart';
 
 class AddGoalScreen extends ConsumerStatefulWidget {
   const AddGoalScreen({super.key});
@@ -31,13 +32,19 @@ class _AddGoalScreenState extends ConsumerState<AddGoalScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       appBar: AppBar(title: const Text("습관 만들기")),
       body: Padding(
         padding: const EdgeInsets.all(24.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
+            //헤더
             const Text("어떤 습관을 만들고 싶나요?", style: AppTypography.title),
+            const SizedBox(height: 16),
+            //카테고리
+            CategoryChips(isOngoing: false),
+
             const SizedBox(height: 16),
             TextField(
               controller: _textController,

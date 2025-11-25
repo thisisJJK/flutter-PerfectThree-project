@@ -54,7 +54,7 @@ class HomeScreen extends ConsumerWidget {
                     indicator: BoxDecoration(
                       color: isDark
                           ? AppColors.primaryDark.withValues(alpha: 0.4)
-                          : AppColors.primary.withValues(alpha: 0.6),
+                          : AppColors.primary.withValues(alpha: 0.5),
                       borderRadius: BorderRadius.circular(10),
                     ),
                     labelStyle: TextStyle(

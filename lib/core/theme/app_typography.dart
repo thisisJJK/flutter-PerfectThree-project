@@ -8,6 +8,6 @@ class AppTypography {
   static const caption = TextStyle(
     fontSize: 13,
     fontWeight: FontWeight.w500,
-    color: Color(0xFF6E6E73),
+    // color: Color(0xFF6E6E73),
   );
 }

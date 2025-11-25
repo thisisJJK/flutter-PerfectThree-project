@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import 'package:perfect_three/core/theme/app_typography.dart';
 import 'package:perfect_three/data/models/goal.dart';
 import 'package:perfect_three/features/goals/viewmodel/goal_viewmodel.dart';
+import 'package:perfect_three/features/goals/widgets/category_chips.dart';
 import 'package:perfect_three/features/goals/widgets/goal_card.dart';
 
 class OngoingGoalScreen extends ConsumerWidget {
@@ -38,40 +39,50 @@ class OngoingGoalScreen extends ConsumerWidget {
             );
           }
           // 목표 리스트 렌더링
-          return ReorderableListView.builder(
-            padding: const EdgeInsets.fromLTRB(0, 8, 0, 80), // FAB와 겹치지 않게 여백
-            onReorder: (oldIndex, newIndex) {
-              ref
-                  .read(goalViewModelProvider.notifier)
-                  .reorder(oldIndex, newIndex, ongoingGoals);
-            },
-            proxyDecorator: (child, index, animation) {
-              return AnimatedBuilder(
-                animation: animation,
-                builder: (BuildContext context, Widget? child) {
-                  final double animValue = Curves.easeInOut.transform(
-                    animation.value,
-                  );
-                  final double elevation = lerpDouble(1, 6, animValue)!;
-                  final double scale = lerpDouble(1, 1.03, animValue)!;
-                  return Transform.scale(
-                    scale: scale,
-                    child: GoalCard(
-                      goal: ongoingGoals[index],
-                      elevation: elevation,
-                    ),
-                  );
-                },
-              );
-            },
-            itemCount: ongoingGoals.length,
-            itemBuilder: (context, index) {
-              final goal = ongoingGoals[index];
-              return GoalCard(
-                goal: goal,
-                key: ValueKey(ongoingGoals[index].id),
-              );
-            },
+          return Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.fromLTRB(20, 12, 8, 0),
+                child: CategoryChips(isOngoing: true),
+              ),
+              Expanded(
+                child: ReorderableListView.builder(
+                  padding: const EdgeInsets.only(bottom: 80), // FAB와 겹치지 않게 여백
+                  onReorder: (oldIndex, newIndex) {
+                    ref
+                        .read(goalViewModelProvider.notifier)
+                        .reorder(oldIndex, newIndex, ongoingGoals);
+                  },
+                  proxyDecorator: (child, index, animation) {
+                    return AnimatedBuilder(
+                      animation: animation,
+                      builder: (BuildContext context, Widget? child) {
+                        final double animValue = Curves.easeInOut.transform(
+                          animation.value,
+                        );
+                        final double elevation = lerpDouble(1, 6, animValue)!;
+                        final double scale = lerpDouble(1, 1.03, animValue)!;
+                        return Transform.scale(
+                          scale: scale,
+                          child: GoalCard(
+                            goal: ongoingGoals[index],
+                            elevation: elevation,
+                          ),
+                        );
+                      },
+                    );
+                  },
+                  itemCount: ongoingGoals.length,
+                  itemBuilder: (context, index) {
+                    final goal = ongoingGoals[index];
+                    return GoalCard(
+                      goal: goal,
+                      key: ValueKey(ongoingGoals[index].id),
+                    );
+                  },
+                ),
+              ),
+            ],
           );
         },
       ),
