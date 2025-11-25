@@ -21,6 +21,7 @@ class GoalCard extends ConsumerWidget {
 
     final themeMode = ref.watch(themeModeNotifierProvider).value;
     final isDark = themeMode == ThemeMode.dark;
+    final category = goal.category;
 
     return Card(
       margin: const EdgeInsets.symmetric(
@@ -58,7 +59,7 @@ class GoalCard extends ConsumerWidget {
                         : Colors.deepPurple.shade100,
                     borderRadius: BorderRadius.circular(12),
                   ),
-                  child: Text("아침", style: AppTypography.caption),
+                  child: Text(category, style: AppTypography.caption),
                 ),
                 Spacer(),
                 Container(

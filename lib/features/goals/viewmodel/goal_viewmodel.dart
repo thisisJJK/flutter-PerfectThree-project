@@ -13,6 +13,7 @@ part 'goal_viewmodel.g.dart';
 @riverpod
 class GoalViewModel extends _$GoalViewModel {
   late GoalRepository _repository;
+  late String _category;
 
   @override
   Future<List<Goal>> build() async {
@@ -35,6 +36,7 @@ class GoalViewModel extends _$GoalViewModel {
         isOngoing: true,
         sortOrder: 0,
         createdAt: DateTime.now(),
+        category: _category,
       );
 
       final updated = [
@@ -192,5 +194,10 @@ class GoalViewModel extends _$GoalViewModel {
     await _repository.saveGoals(updated);
 
     state = AsyncValue.data(updated);
+  }
+
+  String updateCategory(String category) {
+    _category = category;
+    return _category;
   }
 }

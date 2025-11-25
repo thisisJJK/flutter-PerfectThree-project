@@ -1,26 +1,22 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:perfect_three/features/goals/viewmodel/goal_viewmodel.dart';
 
-class CategoryChips extends StatefulWidget {
+class CategoryChips extends ConsumerStatefulWidget {
   final bool isOngoing;
   const CategoryChips({super.key, required this.isOngoing});
 
   @override
-  State<CategoryChips> createState() => _CategoryChipsState();
+  CategoryChipsState createState() => CategoryChipsState();
 }
 
-class _CategoryChipsState extends State<CategoryChips> {
-  List<String> categoryChips = [
-    '일상',
-    '아침',
-    '점심',
-    '저녁',
-    '운동',
-    '업무',
-    '자기계발',
-    '기타',
-  ];
+class CategoryChipsState extends ConsumerState<CategoryChips> {
+  @override
+  void initState() {
+    super.initState();
+  }
 
-  List<String> allChips = [
+  List<String> categoryChips = [
     '전체',
     '일상',
     '아침',
@@ -35,21 +31,24 @@ class _CategoryChipsState extends State<CategoryChips> {
 
   @override
   Widget build(BuildContext context) {
+    // int? value = 0; //여기 넣으면 왜 안되는지?
+
     return widget.isOngoing
         ? SingleChildScrollView(
+            //진행중 화면
             scrollDirection: Axis.horizontal,
             child: Row(
-              children: List.generate(allChips.length, (int index) {
+              children: List.generate(categoryChips.length, (int index) {
                 return Row(
                   children: [
                     ChoiceChip(
                       padding: EdgeInsets.all(8),
                       showCheckmark: false,
-                      label: Text(allChips[index]),
+                      label: Text(categoryChips[index]),
                       selected: value == index,
                       onSelected: (bool selected) {
                         setState(() {
-                          value = selected ? index : null;
+                          value = index;
                         });
                       },
                     ),
@@ -60,16 +59,20 @@ class _CategoryChipsState extends State<CategoryChips> {
             ),
           )
         : Wrap(
+            //추가 화면
             spacing: 5,
-            children: List.generate(categoryChips.length, (int index) {
+            children: List.generate(categoryChips.length - 1, (int index) {
               return ChoiceChip(
                 padding: EdgeInsets.all(8),
                 showCheckmark: false,
-                label: Text(categoryChips[index]),
+                label: Text(categoryChips[index + 1]),
                 selected: value == index,
                 onSelected: (bool selected) {
                   setState(() {
-                    value = selected ? index : null;
+                    value = index;
+                    ref
+                        .read(goalViewModelProvider.notifier)
+                        .updateCategory(categoryChips[index + 1]);
                   });
                 },
               );

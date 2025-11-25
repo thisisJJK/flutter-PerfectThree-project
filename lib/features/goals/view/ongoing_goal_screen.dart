@@ -42,7 +42,7 @@ class OngoingGoalScreen extends ConsumerWidget {
           return Column(
             children: [
               Padding(
-                padding: const EdgeInsets.fromLTRB(20, 12, 8, 0),
+                padding: const EdgeInsets.fromLTRB(18, 12, 8, 0),
                 child: CategoryChips(isOngoing: true),
               ),
               Expanded(
