@@ -18,9 +18,10 @@ class GoalViewModel extends _$GoalViewModel {
   Future<List<Goal>> build() async {
     _repository = ref.watch(goalRepositoryProvider);
 
-    List<Goal> goals = await _repository.getGoals();
+    await _resetFailedGoals();
+    List<Goal> updatedGoals = await _repository.getGoals();
 
-    return goals;
+    return updatedGoals;
   }
 
   Future<void> addGoal(String title) async {
@@ -63,9 +64,18 @@ class GoalViewModel extends _$GoalViewModel {
 
       final now = DateTime.now();
       DateTime createdDay = DateUtils.dateOnly(currentGoal.createdAt);
+      bool isSame = DateUtils.differenceDay(now, createdDay) + 0 == dayIndex;
 
-      if (DateUtils.differenceDay(now, createdDay) == dayIndex) {
-        newChecks[dayIndex] = !newChecks[dayIndex];
+      if (isSame) {
+        if (dayIndex == 0 || dayIndex == 1) {
+          newChecks[dayIndex] = !newChecks[dayIndex];
+          if (dayIndex == 1) {
+            currentGoal.lastDay = !currentGoal.lastDay;
+          }
+        } else if (dayIndex == 2 && newChecks[1]) {
+          newChecks[dayIndex] = !newChecks[dayIndex];
+          currentGoal.lastDay = !currentGoal.lastDay;
+        }
       } else {
         CustomLogger.warn('루틴 날짜가 아님');
         return;
@@ -77,7 +87,6 @@ class GoalViewModel extends _$GoalViewModel {
       );
       // DB 저장
       await _repository.saveGoal(updatedGoal);
-
       final currentGoals = state.value!;
       final goalIndex = currentGoals.indexWhere((g) => g.id == currentGoal.id);
       final newGoalList = List<Goal>.from(currentGoals);
@@ -106,18 +115,21 @@ class GoalViewModel extends _$GoalViewModel {
     }
   }
 
-  Future<void> resetGoal(Goal goal) async {
+  Future<void> resetAfterCompletedGoal(Goal currentGoal) async {
     try {
-      final updatedGoal = goal.copyWith(
+      final updatedGoal = currentGoal.copyWith(
         checks: [false, false, false],
-        successCount: goal.successCount + 1,
+        successCount: currentGoal.successCount + 1,
         lastUpdatedDate: DateTime.now(),
         createdAt: DateTime.now(),
       );
+
+      currentGoal.lastDay = false;
+
       // DB 저장
       await _repository.saveGoal(updatedGoal);
       final currentGoals = state.value!;
-      final goalIndex = currentGoals.indexWhere((g) => g.id == goal.id);
+      final goalIndex = currentGoals.indexWhere((g) => g.id == currentGoal.id);
       final newGoalList = List<Goal>.from(currentGoals);
       newGoalList[goalIndex] = updatedGoal;
 
@@ -126,6 +138,41 @@ class GoalViewModel extends _$GoalViewModel {
       CustomLogger.debug("리셋 완료: ${updatedGoal.title}}");
     } catch (e, stackTrace) {
       CustomLogger.error("리셋 실패", e, stackTrace);
+    }
+  }
+
+  Future<void> _resetFailedGoals() async {
+    try {
+      List<Goal> goals = await _repository.getGoals();
+      final failedGoals = await _repository.getFailedGoals(goals);
+
+      if (failedGoals!.isEmpty) {
+        CustomLogger.info("리셋할 목표가 없습니다. 로직 종료.");
+        return;
+      }
+
+      for (Goal goal in failedGoals) {
+        final updatedGoal = goal.copyWith(
+          checks: [false, false, false],
+          successCount: goal.successCount,
+          lastUpdatedDate: DateTime.now(),
+          createdAt: DateTime.now(),
+        );
+
+        await _repository.saveGoal(updatedGoal);
+        final currentGoals = state.value;
+        if (currentGoals != null) {
+          final goalIndex = currentGoals.indexWhere((g) => g.id == goal.id);
+          final newGoalList = List<Goal>.from(currentGoals);
+          newGoalList[goalIndex] = updatedGoal;
+
+          state = AsyncValue.data(newGoalList);
+        }
+
+        CustomLogger.debug("실패 목표 리셋 완료}");
+      }
+    } catch (e, st) {
+      CustomLogger.error("실패 목표 리셋 실패", e, st);
     }
   }
 

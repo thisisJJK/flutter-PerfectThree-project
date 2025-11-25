@@ -10,18 +10,13 @@ class SplashScreen extends ConsumerWidget {
 
   /// 모든 필수 데이터 로딩이 완료되었는지 확인하는 비동기 함수
   Future<void> _initializeApp(BuildContext context, WidgetRef ref) async {
-    // 1. ThemeMode 로드는 이미 main.dart에서 처리되고 있습니다. (themeModeNotifierProvider)
-
-    // 2. 목표 데이터 로딩을 강제로 트리거하여 로딩 완료를 기다립니다.
-    // .future를 사용하여 비동기 로딩 완료를 기다립니다.
+    
     await ref.read(goalViewModelProvider.future);
 
-    // 3. 최소 1.5초는 화면에 머물도록 강제 지연 (너무 빨리 사라지면 어색함 방지)
     await Future.delayed(const Duration(milliseconds: 1500));
 
     CustomLogger.info("✅ 앱 초기화 완료. 홈 화면으로 이동합니다.");
 
-    // 4. 로딩 완료 후 홈 화면으로 이동 (뒤로 가기 방지를 위해 replace)
     if (context.mounted) {
       context.go('/');
     }
@@ -29,7 +24,6 @@ class SplashScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // 위젯이 빌드된 후 초기화 로직을 실행합니다.
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _initializeApp(context, ref);
     });

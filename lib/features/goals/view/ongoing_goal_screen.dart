@@ -91,4 +91,3 @@ List<Goal> _filterOngoing(List<Goal> goals) {
 
   return ongoingGoals;
 }
-

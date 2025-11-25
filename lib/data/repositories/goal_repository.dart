@@ -1,5 +1,6 @@
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:perfect_three/core/utils/app_error.dart';
+import 'package:perfect_three/core/utils/date_utils.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../core/utils/custom_logger.dart';
@@ -77,6 +78,50 @@ class GoalRepository {
       CustomLogger.info("일괄 저장 완료");
     } catch (e, stackTrace) {
       CustomLogger.error("목표 삭제 실패", e, stackTrace);
+    }
+  }
+
+  Future<List<Goal>?> getFailedGoals(List<Goal> goals) async {
+    List<Goal> failedGoals = [];
+    try {
+      //1.전체 목표 리스트에서 isOngoing = true 인 목표 찾기
+      final List<Goal> ongoingGoals = goals
+          .where((g) => g.isOngoing == true)
+          .toList();
+      for (Goal goal in ongoingGoals) {
+        final now = DateTime.now();
+        final createdAt = DateUtils.dateOnly(goal.createdAt);
+        final difference = DateUtils.differenceDay(now, createdAt);
+        if (difference < 0) {
+          continue;
+        }
+        //2.진행중인 목표중에서 createdAt 날짜와 checks 이용해서 실패된 목표 찾기 (생성 날짜부터 연속으로 true가 아니면 실패)
+        bool isFailed = false;
+        final int currentDayInLoop = (difference % 3) + 1;
+
+        for (int i = 0; i < 3; i++) {
+          final bool isChecked = goal.checks[i];
+          final int checkDay = i + 1;
+
+          if (checkDay > currentDayInLoop) continue;
+          if (!isChecked) {
+            isFailed = true;
+            break;
+          }
+        }
+        if (isFailed) {
+          failedGoals.add(goal);
+          CustomLogger.warn('${goal.title} 실패');
+        } else {
+          CustomLogger.warn('${goal.title} 통과');
+        }
+      }
+
+      CustomLogger.debug("실패 목표 검출 완료");
+      return failedGoals;
+    } catch (e, stackTrace) {
+      CustomLogger.error("리셋 실패", e, stackTrace);
+      return failedGoals;
     }
   }
 }

@@ -1,9 +1,10 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' hide DateUtils;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:perfect_three/core/theme/app_spacing.dart';
 import 'package:perfect_three/core/theme/app_typography.dart';
 import 'package:perfect_three/core/theme/provider/theme_provider.dart';
+import 'package:perfect_three/core/utils/date_utils.dart';
 import 'package:perfect_three/features/goals/viewmodel/goal_viewmodel.dart';
 
 import '../../../../data/models/goal.dart';
@@ -12,7 +13,7 @@ class GoalCard extends ConsumerWidget {
   final Goal goal;
   final double? elevation;
 
-  const GoalCard({super.key, required this.goal, this.elevation});
+  const GoalCard({super.key, required this.goal, this.elevation = 0});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -60,13 +61,7 @@ class GoalCard extends ConsumerWidget {
                   ),
                 ),
                 Spacer(),
-                GestureDetector(
-                  onTap: () {
-                    // TODO : 알림 설정 여부
-                  },
-                  child: Icon(Icons.notifications_none),
-                ),
-                SizedBox(width: 4),
+
                 GestureDetector(
                   onTap: () {
                     // TODO : 수정 및 삭제
@@ -92,6 +87,13 @@ class GoalCard extends ConsumerWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: List.generate(3, (index) {
                     final isChecked = goal.checks[index];
+                    final bool lastDay = goal.lastDay;
+                    final now = DateTime.now();
+                    DateTime createdDay = DateUtils.dateOnly(goal.createdAt);
+                    bool isMustCheckToday =
+                        DateUtils.differenceDay(now, createdDay) == index;
+                    bool isLast = DateUtils.differenceDay(now, createdDay) == 2;
+
                     return Row(
                       children: [
                         GestureDetector(
@@ -99,9 +101,7 @@ class GoalCard extends ConsumerWidget {
                             ref
                                 .read(goalViewModelProvider.notifier)
                                 .toggleCheck(goal, index);
-                            if (index == 2 &&
-                                !isChecked &&
-                                goal.checks[1] == true) {
+                            if (index == 2 && lastDay && isLast) {
                               //재도전 여부 다이얼로그
                               _showRetryDialog(context, ref, goal);
                             }
@@ -114,6 +114,13 @@ class GoalCard extends ConsumerWidget {
                                 height: 34,
                                 decoration: BoxDecoration(
                                   shape: BoxShape.circle,
+                                  border: isChecked && isMustCheckToday
+                                      ? Border.all(width: 0)
+                                      : Border.all(
+                                          width: 2,
+                                          color: colorScheme.onPrimaryContainer
+                                              .withValues(alpha: 0.5),
+                                        ),
                                   color: isChecked
                                       ? colorScheme.primary
                                       : colorScheme.surfaceContainerHigh,
@@ -133,9 +140,10 @@ class GoalCard extends ConsumerWidget {
 
                                   color: isChecked
                                       ? colorScheme.onPrimary
-                                      : colorScheme.onSurfaceVariant.withValues(
-                                          alpha: 0.4,
-                                        ),
+                                      : isMustCheckToday
+                                      ? colorScheme.onPrimaryContainer
+                                            .withValues(alpha: 0.3)
+                                      : Colors.transparent,
                                   size: 26,
                                 ),
                               ),
@@ -176,7 +184,9 @@ void _showRetryDialog(BuildContext context, WidgetRef ref, Goal goal) async {
               GestureDetector(
                 onTap: () {
                   //리셋
-                  ref.read(goalViewModelProvider.notifier).resetGoal(goal);
+                  ref
+                      .read(goalViewModelProvider.notifier)
+                      .resetAfterCompletedGoal(goal);
                   context.pop();
                 },
                 child: Container(
