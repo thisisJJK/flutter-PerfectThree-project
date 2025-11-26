@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-
 import 'package:perfect_three/features/ads/banner_ad_widget.dart';
 import 'package:perfect_three/features/goals/viewmodel/goal_viewmodel.dart';
 import 'package:perfect_three/features/goals/widgets/category_chips.dart';
@@ -40,7 +39,7 @@ class _AddGoalScreenState extends ConsumerState<AddGoalScreen> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             //헤더
-            const Text("어떤 습관을 만들고 싶나요?"),
+            const Text("어떤 습관을 만들고 싶나요?", style: TextStyle(fontSize: 20)),
             const SizedBox(height: 16),
             //카테고리
             CategoryChips(isOngoing: false),
@@ -67,7 +66,7 @@ class _AddGoalScreenState extends ConsumerState<AddGoalScreen> {
                   borderRadius: BorderRadius.circular(12),
                 ),
               ),
-              child: const Text("저장하기",),
+              child: const Text("저장하기"),
             ),
           ],
         ),

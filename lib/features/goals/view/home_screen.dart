@@ -19,7 +19,7 @@ class HomeScreen extends ConsumerWidget {
     return Scaffold(
       body: DefaultTabController(
         initialIndex: 0,
-        length: 2,
+        length: 3,
         child: Scaffold(
           appBar: AppBar(
             title: Text("Perfect Three", style: TextStyle(fontSize: 24)),
@@ -43,7 +43,7 @@ class HomeScreen extends ConsumerWidget {
                   margin: EdgeInsets.symmetric(horizontal: 20),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(AppSpacing.radius),
-                    color: isDark ? Colors.grey[900] : Colors.grey[200],
+                    color: isDark ? Colors.grey[900] : Colors.grey[300],
                   ),
                   child: TabBar(
                     indicatorSize: TabBarIndicatorSize.tab,
@@ -60,11 +60,12 @@ class HomeScreen extends ConsumerWidget {
                       fontWeight: FontWeight.bold,
                       color: Colors.white70,
                     ),
-                    unselectedLabelStyle: Font.jua.copyWith(fontSize: 14),
+                    unselectedLabelStyle: Font.jua.copyWith(fontSize: 15),
 
                     tabs: [
                       Center(child: Text('진행중')),
-                      Center(child: Text('완료')),
+                      Center(child: Text('내 습관')),
+                      Center(child: Text('통계')),
                     ],
                   ),
                 ),
@@ -72,7 +73,11 @@ class HomeScreen extends ConsumerWidget {
             ),
           ),
           body: TabBarView(
-            children: [OngoingGoalScreen(), CompletedGoalScreen()],
+            children: [
+              OngoingGoalScreen(),
+              CompletedGoalScreen(),
+              CompletedGoalScreen(),
+            ],
           ),
         ),
       ),

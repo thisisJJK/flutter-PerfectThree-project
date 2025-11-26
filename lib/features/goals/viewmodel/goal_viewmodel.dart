@@ -17,11 +17,14 @@ class GoalViewModel extends _$GoalViewModel {
 
   @override
   Future<List<Goal>> build() async {
-    _repository = ref.watch(goalRepositoryProvider);
+    final goals = await _getGoals();
+    return goals;
+  }
 
+  Future<List<Goal>> _getGoals() async {
+    _repository = ref.watch(goalRepositoryProvider);
     await _resetFailedGoals();
     List<Goal> updatedGoals = await _repository.getGoals();
-
     return updatedGoals;
   }
 
@@ -162,8 +165,8 @@ class GoalViewModel extends _$GoalViewModel {
         );
 
         await _repository.saveGoal(updatedGoal);
-        final currentGoals = state.value;
-        if (currentGoals != null) {
+        final List<Goal> currentGoals = await _repository.getGoals();
+        if (currentGoals.isNotEmpty) {
           final goalIndex = currentGoals.indexWhere((g) => g.id == goal.id);
           final newGoalList = List<Goal>.from(currentGoals);
           newGoalList[goalIndex] = updatedGoal;
@@ -194,6 +197,20 @@ class GoalViewModel extends _$GoalViewModel {
     await _repository.saveGoals(updated);
 
     state = AsyncValue.data(updated);
+  }
+
+  Future<void> categoryFilter(String category) async {
+    try {
+      final goals = await _getGoals();
+      final List<Goal> filtered = goals
+          .where((g) => g.category == category)
+          .toList();
+
+      state = AsyncValue.data(filtered);
+      CustomLogger.info('카테고리 필터 성공 $filtered');
+    } catch (e, t) {
+      CustomLogger.error('카테고리 핉터 실패 e: $e ,t: $t');
+    }
   }
 
   String updateCategory(String category) {

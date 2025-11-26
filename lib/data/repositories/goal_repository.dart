@@ -113,7 +113,7 @@ class GoalRepository {
           failedGoals.add(goal);
           CustomLogger.warn('${goal.title} 실패');
         } else {
-          CustomLogger.warn('${goal.title} 통과');
+          CustomLogger.info('${goal.title} 통과');
         }
       }
 

@@ -31,7 +31,7 @@ class GoalCard extends ConsumerWidget {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(AppSpacing.radius),
         side: BorderSide(
-          color: colorScheme.onPrimaryContainer.withValues(alpha: 0.3),
+          color: colorScheme.onPrimaryContainer.withValues(alpha: 0.1),
         ),
       ),
       color: colorScheme.surfaceContainerLow,
@@ -91,7 +91,7 @@ class GoalCard extends ConsumerWidget {
                 Expanded(
                   child: Text(
                     '• ${goal.title}',
-                    style: TextStyle(fontSize: 18),
+                    style: TextStyle(fontSize: 17),
                     overflow: TextOverflow.ellipsis,
                   ),
                 ),
@@ -156,17 +156,19 @@ class GoalCard extends ConsumerWidget {
                                             : Colors.transparent,
                                         size: 26,
                                       )
-                                    : Center(
+                                    : isMustCheckToday
+                                    ? Center(
                                         child: Text(
                                           (index + 1).toString(),
                                           style: TextStyle(
                                             fontSize: 18,
                                             color: colorScheme
                                                 .onPrimaryContainer
-                                                .withValues(alpha: 0.2),
+                                                .withValues(alpha: 0.3),
                                           ),
                                         ),
-                                      ),
+                                      )
+                                    : null,
                               ),
                             ],
                           ),

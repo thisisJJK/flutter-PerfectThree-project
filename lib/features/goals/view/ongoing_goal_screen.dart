@@ -16,35 +16,35 @@ class OngoingGoalScreen extends ConsumerWidget {
     // ViewModel 상태 구독
     final goalsAsync = ref.watch(goalViewModelProvider);
     return Scaffold(
-      body: goalsAsync.when(
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (err, stack) => Center(child: Text('에러: $err')),
-        data: (goals) {
-          final ongoingGoals = _filterOngoing(goals);
-          if (ongoingGoals.isEmpty) {
-            return Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(Icons.flag_outlined, size: 64),
-                  const SizedBox(height: 16),
-                  Text(
-                    "아직 목표가 없어요.\n새로운 3일 도전을 시작해보세요!",
-                    textAlign: TextAlign.center,
-                  ),
-                ],
-              ),
-            );
-          }
-          // 목표 리스트 렌더링
-          return Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.fromLTRB(20, 12, 8, 0),
-                child: CategoryChips(isOngoing: true),
-              ),
-              Expanded(
-                child: ReorderableListView.builder(
+      body: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.fromLTRB(20, 12, 8, 0),
+            child: CategoryChips(isOngoing: true),
+          ),
+          Expanded(
+            child: goalsAsync.when(
+              loading: () => const Center(child: CircularProgressIndicator()),
+              error: (err, stack) => Center(child: Text('에러: $err')),
+              data: (goals) {
+                final ongoingGoals = _filterOngoing(goals);
+                if (ongoingGoals.isEmpty) {
+                  return Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(Icons.flag_outlined, size: 64),
+                        const SizedBox(height: 16),
+                        Text(
+                          "아직 목표가 없어요.\n새로운 3일 도전을 시작해보세요!",
+                          textAlign: TextAlign.center,
+                        ),
+                      ],
+                    ),
+                  );
+                }
+                // 목표 리스트 렌더링
+                return ReorderableListView.builder(
                   padding: const EdgeInsets.only(bottom: 80), // FAB와 겹치지 않게 여백
                   onReorder: (oldIndex, newIndex) {
                     ref
@@ -78,11 +78,11 @@ class OngoingGoalScreen extends ConsumerWidget {
                       key: ValueKey(ongoingGoals[index].id),
                     );
                   },
-                ),
-              ),
-            ],
-          );
-        },
+                );
+              },
+            ),
+          ),
+        ],
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {

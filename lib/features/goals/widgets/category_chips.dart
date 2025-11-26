@@ -5,6 +5,7 @@ import 'package:perfect_three/features/goals/viewmodel/goal_viewmodel.dart';
 
 class CategoryChips extends ConsumerStatefulWidget {
   final bool isOngoing;
+
   const CategoryChips({super.key, required this.isOngoing});
 
   @override
@@ -50,6 +51,18 @@ class CategoryChipsState extends ConsumerState<CategoryChips> {
                       onSelected: (bool selected) {
                         setState(() {
                           value = index;
+
+                          //카테고리별 필터
+                          //전체 => 전체 습관 리스트
+                          if (index == 0) {
+                            ref.watch(goalViewModelProvider.notifier).build();
+                          }
+                          //카테고리별 습관 리스트
+                          if (index > 0) {
+                            ref
+                                .watch(goalViewModelProvider.notifier)
+                                .categoryFilter(categoryChips[index]);
+                          }
                         });
                       },
                     ),
@@ -71,6 +84,7 @@ class CategoryChipsState extends ConsumerState<CategoryChips> {
                 onSelected: (bool selected) {
                   setState(() {
                     value = index;
+                    //습관 카테고리 저장
                     ref
                         .read(goalViewModelProvider.notifier)
                         .updateCategory(categoryChips[index + 1]);
