@@ -2,7 +2,6 @@ import 'package:flutter/material.dart' hide DateUtils;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:perfect_three/core/theme/app_spacing.dart';
-import 'package:perfect_three/core/theme/app_typography.dart';
 import 'package:perfect_three/core/theme/provider/theme_provider.dart';
 import 'package:perfect_three/core/utils/date_utils.dart';
 import 'package:perfect_three/features/goals/viewmodel/goal_viewmodel.dart';
@@ -26,27 +25,27 @@ class GoalCard extends ConsumerWidget {
     return Card(
       margin: const EdgeInsets.symmetric(
         vertical: AppSpacing.sm,
-        horizontal: AppSpacing.md,
+        horizontal: AppSpacing.lg,
       ),
       elevation: elevation,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(AppSpacing.radius),
         side: BorderSide(
-          color: colorScheme.onPrimaryContainer.withValues(alpha: 0.2),
+          color: colorScheme.onPrimaryContainer.withValues(alpha: 0.3),
         ),
       ),
+      color: colorScheme.surfaceContainerLow,
 
       child: Padding(
         padding: const EdgeInsets.fromLTRB(
+          AppSpacing.lg,
           AppSpacing.md,
-          AppSpacing.sm,
+          AppSpacing.lg,
           AppSpacing.md,
-          AppSpacing.sm,
         ),
         child: Column(
           children: [
             Row(
-              mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 Container(
                   padding: const EdgeInsets.symmetric(
@@ -55,11 +54,11 @@ class GoalCard extends ConsumerWidget {
                   ),
                   decoration: BoxDecoration(
                     color: isDark
-                        ? colorScheme.tertiary.withValues(alpha: 0.3)
+                        ? colorScheme.tertiary.withValues(alpha: 0.4)
                         : Colors.deepPurple.shade100,
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(AppSpacing.radius),
                   ),
-                  child: Text(category, style: AppTypography.caption),
+                  child: Text(category),
                 ),
                 Spacer(),
                 Container(
@@ -69,14 +68,11 @@ class GoalCard extends ConsumerWidget {
                   ),
                   decoration: BoxDecoration(
                     color: isDark
-                        ? colorScheme.inversePrimary.withValues(alpha: 0.3)
+                        ? colorScheme.inversePrimary.withValues(alpha: 0.5)
                         : colorScheme.secondaryContainer,
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(AppSpacing.radius),
                   ),
-                  child: Text(
-                    "🔥${goal.successCount}회 성공!",
-                    style: AppTypography.caption,
-                  ),
+                  child: Text("🔥${goal.successCount}회 성공!"),
                 ),
                 SizedBox(width: 8),
 
@@ -95,8 +91,8 @@ class GoalCard extends ConsumerWidget {
                 Expanded(
                   child: Text(
                     '• ${goal.title}',
+                    style: TextStyle(fontSize: 18),
                     overflow: TextOverflow.ellipsis,
-                    style: AppTypography.body,
                   ),
                 ),
 

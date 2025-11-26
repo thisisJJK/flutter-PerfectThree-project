@@ -36,6 +36,8 @@ dependencies:
   path_provider: 
   # [모델] 고유 id 생성
   uuid:
+  # [폰트]
+  google_fonts: ^6.3.2
 
 dev_dependencies:
   flutter_test:

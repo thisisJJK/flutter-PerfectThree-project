@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:perfect_three/core/theme/app_spacing.dart';
 import 'package:perfect_three/features/goals/viewmodel/goal_viewmodel.dart';
 
 class CategoryChips extends ConsumerStatefulWidget {
@@ -42,7 +43,7 @@ class CategoryChipsState extends ConsumerState<CategoryChips> {
                 return Row(
                   children: [
                     ChoiceChip(
-                      padding: EdgeInsets.all(8),
+                      padding: EdgeInsets.all(AppSpacing.sm),
                       showCheckmark: false,
                       label: Text(categoryChips[index]),
                       selected: value == index,
@@ -52,7 +53,7 @@ class CategoryChipsState extends ConsumerState<CategoryChips> {
                         });
                       },
                     ),
-                    SizedBox(width: 5),
+                    SizedBox(width: AppSpacing.sm),
                   ],
                 );
               }).toList(),

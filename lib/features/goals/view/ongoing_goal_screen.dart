@@ -3,7 +3,6 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:perfect_three/core/theme/app_typography.dart';
 import 'package:perfect_three/data/models/goal.dart';
 import 'package:perfect_three/features/goals/viewmodel/goal_viewmodel.dart';
 import 'package:perfect_three/features/goals/widgets/category_chips.dart';
@@ -32,7 +31,6 @@ class OngoingGoalScreen extends ConsumerWidget {
                   Text(
                     "아직 목표가 없어요.\n새로운 3일 도전을 시작해보세요!",
                     textAlign: TextAlign.center,
-                    style: AppTypography.body,
                   ),
                 ],
               ),
@@ -42,7 +40,7 @@ class OngoingGoalScreen extends ConsumerWidget {
           return Column(
             children: [
               Padding(
-                padding: const EdgeInsets.fromLTRB(18, 12, 8, 0),
+                padding: const EdgeInsets.fromLTRB(20, 12, 8, 0),
                 child: CategoryChips(isOngoing: true),
               ),
               Expanded(
