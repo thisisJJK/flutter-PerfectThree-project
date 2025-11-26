@@ -1,4 +1,5 @@
 import 'package:hive/hive.dart';
+import 'package:perfect_three/core/utils/date_utils.dart';
 
 part 'goal.g.dart';
 
@@ -64,7 +65,7 @@ class Goal extends HiveObject {
       title: title,
       checks: [false, false, false], // 처음엔 모두 미달성
       successCount: 0,
-      lastUpdatedDate: DateTime.now(),
+      lastUpdatedDate: DateUtils.now(),
       isOngoing: isOngoing,
       sortOrder: sortOrder,
       createdAt: createdAt,
@@ -83,7 +84,7 @@ class Goal extends HiveObject {
     int? sortOrder,
     DateTime? createdAt,
     bool? lastDay,
-    String? category
+    String? category,
   }) {
     return Goal(
       id: id, // ID는 변경 불가
@@ -95,7 +96,7 @@ class Goal extends HiveObject {
       sortOrder: sortOrder ?? this.sortOrder,
       createdAt: createdAt ?? this.createdAt,
       lastDay: lastDay ?? this.lastDay,
-      category: category?? this.category,
+      category: category ?? this.category,
     );
   }
 }

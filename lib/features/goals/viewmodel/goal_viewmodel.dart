@@ -38,7 +38,7 @@ class GoalViewModel extends _$GoalViewModel {
         title: title,
         isOngoing: true,
         sortOrder: 0,
-        createdAt: DateTime.now(),
+        createdAt: DateUtils.now(),
         category: _category,
       );
 
@@ -67,7 +67,7 @@ class GoalViewModel extends _$GoalViewModel {
       List<bool> newChecks = List.from(currentGoal.checks);
       int newSuccessCount = currentGoal.successCount;
 
-      final now = DateTime.now();
+      final now = DateUtils.now();
       DateTime createdDay = DateUtils.dateOnly(currentGoal.createdAt);
       bool isSame = DateUtils.differenceDay(now, createdDay) + 0 == dayIndex;
 
@@ -125,11 +125,10 @@ class GoalViewModel extends _$GoalViewModel {
       final updatedGoal = currentGoal.copyWith(
         checks: [false, false, false],
         successCount: currentGoal.successCount + 1,
-        lastUpdatedDate: DateTime.now(),
-        createdAt: DateTime.now(),
+        lastUpdatedDate: DateUtils.now(),
+        createdAt: DateUtils.now(),
+        lastDay: false,
       );
-
-      currentGoal.lastDay = false;
 
       // DB 저장
       await _repository.saveGoal(updatedGoal);
@@ -160,8 +159,8 @@ class GoalViewModel extends _$GoalViewModel {
         final updatedGoal = goal.copyWith(
           checks: [false, false, false],
           successCount: goal.successCount,
-          lastUpdatedDate: DateTime.now(),
-          createdAt: DateTime.now(),
+          lastUpdatedDate: DateUtils.now(),
+          createdAt: DateUtils.now(),
         );
 
         await _repository.saveGoal(updatedGoal);

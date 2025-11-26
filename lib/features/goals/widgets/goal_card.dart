@@ -101,7 +101,7 @@ class GoalCard extends ConsumerWidget {
                   children: List.generate(3, (index) {
                     final isChecked = goal.checks[index];
                     final bool lastDay = goal.lastDay;
-                    final now = DateTime.now();
+                    final now = DateUtils.now();
                     DateTime createdDay = DateUtils.dateOnly(goal.createdAt);
                     bool isMustCheckToday =
                         DateUtils.differenceDay(now, createdDay) == index;
@@ -199,13 +199,14 @@ void _showRetryDialog(BuildContext context, WidgetRef ref, Goal goal) async {
       final double height = 45;
       return AlertDialog(
         title: Text('Perfect Three 성공!'),
-        content: Text('습관이 될 때까지 계속 도전해보세요!'),
+        content: Text('습관이 될 때까지 계속 도전해보세요!\n'),
         actions: [
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               GestureDetector(
                 onTap: () {
+                  //재도전
                   //리셋
                   ref
                       .read(goalViewModelProvider.notifier)
@@ -221,7 +222,7 @@ void _showRetryDialog(BuildContext context, WidgetRef ref, Goal goal) async {
                   ),
                   child: Center(
                     child: Text(
-                      '재도전',
+                      '계속하기',
                       style: textTheme.bodyMedium!.copyWith(
                         fontWeight: FontWeight.bold,
                       ),
@@ -231,8 +232,9 @@ void _showRetryDialog(BuildContext context, WidgetRef ref, Goal goal) async {
               ),
               GestureDetector(
                 onTap: () {
+                  //내 습관으로 이동
                   //삭제
-                  ref.read(goalViewModelProvider.notifier).deleteGoal(goal.id);
+
                   context.pop();
                 },
                 child: Container(

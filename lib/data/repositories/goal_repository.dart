@@ -89,7 +89,7 @@ class GoalRepository {
           .where((g) => g.isOngoing == true)
           .toList();
       for (Goal goal in ongoingGoals) {
-        final now = DateTime.now();
+        final now = DateUtils.now();
         final createdAt = DateUtils.dateOnly(goal.createdAt);
         final difference = DateUtils.differenceDay(now, createdAt);
         if (difference < 0) {

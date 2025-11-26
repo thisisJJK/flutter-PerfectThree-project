@@ -9,8 +9,15 @@ class DateUtils {
   static bool isSameDay(DateTime date1, DateTime date2) {
     return dateOnly(date1).isAtSameMomentAs(dateOnly(date2));
   }
+
   //두 날짜 차이
   static int differenceDay(DateTime date1, DateTime date2) {
     return dateOnly(date1).difference(dateOnly(date2)).inDays;
+  }
+
+  //날짜 점프용
+  static DateTime Function() now = () => DateTime.now();
+  static void jumpTime(int day) {
+    DateUtils.now = () => DateTime.now().add(Duration(days: day));
   }
 }
