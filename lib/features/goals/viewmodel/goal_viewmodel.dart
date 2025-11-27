@@ -72,7 +72,7 @@ class GoalViewModel extends _$GoalViewModel {
 
       final now = DateUtils.now();
       DateTime createdDay = DateUtils.dateOnly(currentGoal.createdAt);
-      bool isSame = DateUtils.differenceDay(now, createdDay) + 0 == dayIndex;
+      bool isSame = DateUtils.differenceDay(now, createdDay) % 3 == dayIndex;
 
       if (isSame) {
         if (dayIndex == 0 || dayIndex == 1) {
@@ -226,10 +226,14 @@ class GoalViewModel extends _$GoalViewModel {
     return _category;
   }
 
-  Future<void> toggleIsOngoing(Goal currentGoal) async {
+  Future<void> toggleIsOngoing(Goal currentGoal, bool isRetry) async {
     try {
       final updatedGoal = currentGoal.copyWith(
         isOngoing: currentGoal.isOngoing = !currentGoal.isOngoing,
+        successCount: isRetry
+            ? currentGoal.successCount
+            : currentGoal.successCount + 1,
+        checks: [false, false, false],
         lastUpdatedDate: DateUtils.now(),
         lastDay: false,
       );

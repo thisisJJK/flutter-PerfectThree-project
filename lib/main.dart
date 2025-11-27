@@ -19,7 +19,7 @@ void main() async {
   await Hive.openBox<Goal>('goals_box');
 
   //날짜 조작 용도 (테스트용)
-  // DateUtils.jumpTime(2);
+  // DateUtils.jumpTime(0);
   print(DateUtils.now());
 
   CustomLogger.info("🚀 Perfect Three 앱이 시작됩니다. (Hive 초기화 완료)");

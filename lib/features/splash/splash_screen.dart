@@ -10,7 +10,6 @@ class SplashScreen extends ConsumerWidget {
 
   /// 모든 필수 데이터 로딩이 완료되었는지 확인하는 비동기 함수
   Future<void> _initializeApp(BuildContext context, WidgetRef ref) async {
-    
     await ref.read(goalViewModelProvider.future);
 
     await Future.delayed(const Duration(milliseconds: 1500));
@@ -55,11 +54,11 @@ class SplashScreen extends ConsumerWidget {
               "3일, 작은 성공이 만드는 큰 습관",
               style: TextStyle(
                 fontSize: 14,
-                color: Theme.of(context).colorScheme.onSurface.withValues(alpha:  0.7),
+                color: Theme.of(
+                  context,
+                ).colorScheme.onSurface.withValues(alpha: 0.7),
               ),
             ),
-            const SizedBox(height: 60),
-            const CircularProgressIndicator(), // 로딩 중임을 시각적으로 보여줍니다.
           ],
         ),
       ),

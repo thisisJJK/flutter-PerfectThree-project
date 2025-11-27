@@ -104,8 +104,9 @@ class GoalCard extends ConsumerWidget {
                     final now = DateUtils.now();
                     DateTime createdDay = DateUtils.dateOnly(goal.createdAt);
                     bool isMustCheckToday =
-                        DateUtils.differenceDay(now, createdDay) == index;
-                    bool isLast = DateUtils.differenceDay(now, createdDay) == 2;
+                        DateUtils.differenceDay(now, createdDay) % 3 == index;
+                    bool isLast =
+                        DateUtils.differenceDay(now, createdDay) % 3 == 2;
 
                     return Row(
                       children: [
@@ -237,7 +238,7 @@ void _showRetryDialog(BuildContext context, WidgetRef ref, Goal goal) async {
                   //isOnging = false
                   ref
                       .read(goalViewModelProvider.notifier)
-                      .toggleIsOngoing(goal);
+                      .toggleIsOngoing(goal, false);
 
                   context.pop();
                 },

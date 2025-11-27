@@ -3,7 +3,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:perfect_three/features/goals/viewmodel/goal_viewmodel.dart';
-import 'package:perfect_three/features/goals/widgets/my_habit_card.dart';
+import 'package:perfect_three/features/goals/widgets/my_routin_card.dart';
 
 class MyRoutinScreen extends ConsumerWidget {
   const MyRoutinScreen({super.key});
@@ -53,7 +53,7 @@ class MyRoutinScreen extends ConsumerWidget {
                     final double scale = lerpDouble(1, 1.03, animValue)!;
                     return Transform.scale(
                       scale: scale,
-                      child: MyHabitCard(
+                      child: MyRoutinCard(
                         goal: ongoingFalseGoals[index],
                         elevation: elevation,
                       ),
@@ -63,7 +63,7 @@ class MyRoutinScreen extends ConsumerWidget {
               },
               itemCount: ongoingFalseGoals.length,
               itemBuilder: (context, index) {
-                return MyHabitCard(
+                return MyRoutinCard(
                   goal: ongoingFalseGoals[index],
                   key: ValueKey(ongoingFalseGoals[index].id),
                 );
