@@ -13,15 +13,17 @@ part 'goal_viewmodel.g.dart';
 @riverpod
 class GoalViewModel extends _$GoalViewModel {
   late GoalRepository _repository;
-  late String _category;
+  String _category = '일상';
+  bool isStatsScreen = false;
 
   @override
   Future<List<Goal>> build() async {
-    final goals = await _getGoals();
+    final goals = await getGoals();
+    state = AsyncValue.data(goals);
     return goals;
   }
 
-  Future<List<Goal>> _getGoals() async {
+  Future<List<Goal>> getGoals() async {
     _repository = ref.watch(goalRepositoryProvider);
     await _resetFailedGoals();
     List<Goal> updatedGoals = await _repository.getGoals();
@@ -32,13 +34,14 @@ class GoalViewModel extends _$GoalViewModel {
     state = const AsyncValue.loading();
 
     try {
+      final now = DateUtils.now();
       final current = state.value ?? [];
       final newGoal = Goal.create(
         id: const Uuid().v4(), // 고유 ID 생성
         title: title,
         isOngoing: true,
         sortOrder: 0,
-        createdAt: DateUtils.now(),
+        createdAt: now,
         category: _category,
       );
 
@@ -200,7 +203,7 @@ class GoalViewModel extends _$GoalViewModel {
 
   Future<void> categoryFilter(String category) async {
     try {
-      final goals = await _getGoals();
+      final goals = await getGoals();
       final List<Goal> filtered = goals
           .where((g) => g.category == category)
           .toList();
@@ -212,8 +215,38 @@ class GoalViewModel extends _$GoalViewModel {
     }
   }
 
+  List<Goal> filterOngoing(List<Goal> goals, bool isOngoing) {
+    final ongoingGoals = goals.where((g) => g.isOngoing == isOngoing).toList();
+
+    return ongoingGoals;
+  }
+
   String updateCategory(String category) {
     _category = category;
     return _category;
+  }
+
+  Future<void> toggleIsOngoing(Goal currentGoal) async {
+    try {
+      final updatedGoal = currentGoal.copyWith(
+        isOngoing: currentGoal.isOngoing = !currentGoal.isOngoing,
+        lastUpdatedDate: DateUtils.now(),
+        lastDay: false,
+      );
+      // DB 저장
+      await _repository.saveGoal(updatedGoal);
+      ref.invalidateSelf();
+      CustomLogger.info('진행 토글 성공');
+    } catch (e, t) {
+      CustomLogger.error('진행 토글 실패 e: $e , t: $t');
+    }
+  }
+
+  void toggleIsStatsScreen(int value) {
+    if (value == 2) {
+      isStatsScreen = true;
+    } else {
+      isStatsScreen = false;
+    }
   }
 }

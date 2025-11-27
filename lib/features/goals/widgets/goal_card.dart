@@ -34,7 +34,6 @@ class GoalCard extends ConsumerWidget {
           color: colorScheme.onPrimaryContainer.withValues(alpha: 0.1),
         ),
       ),
-      color: colorScheme.surfaceContainerLow,
 
       child: Padding(
         padding: const EdgeInsets.fromLTRB(
@@ -72,8 +71,9 @@ class GoalCard extends ConsumerWidget {
                         : colorScheme.secondaryContainer,
                     borderRadius: BorderRadius.circular(AppSpacing.radius),
                   ),
-                  child: Text("🔥${goal.successCount}회 성공!"),
+                  child: Text("🔥연속 ${goal.successCount}회"),
                 ),
+
                 SizedBox(width: 8),
 
                 GestureDetector(
@@ -114,6 +114,7 @@ class GoalCard extends ConsumerWidget {
                             ref
                                 .read(goalViewModelProvider.notifier)
                                 .toggleCheck(goal, index);
+
                             if (index == 2 && lastDay && isLast) {
                               //재도전 여부 다이얼로그
                               _showRetryDialog(context, ref, goal);
@@ -199,7 +200,7 @@ void _showRetryDialog(BuildContext context, WidgetRef ref, Goal goal) async {
       final double height = 45;
       return AlertDialog(
         title: Text('Perfect Three 성공!'),
-        content: Text('습관이 될 때까지 계속 도전해보세요!\n'),
+        content: Text('내 루틴으로 만들었어요!\n이어서 계속 하시겠어요?'),
         actions: [
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -233,7 +234,10 @@ void _showRetryDialog(BuildContext context, WidgetRef ref, Goal goal) async {
               GestureDetector(
                 onTap: () {
                   //내 습관으로 이동
-                  //삭제
+                  //isOnging = false
+                  ref
+                      .read(goalViewModelProvider.notifier)
+                      .toggleIsOngoing(goal);
 
                   context.pop();
                 },
@@ -249,7 +253,7 @@ void _showRetryDialog(BuildContext context, WidgetRef ref, Goal goal) async {
                   ),
                   child: Center(
                     child: Text(
-                      '끝내기',
+                      '그만하기',
                       style: textTheme.bodyMedium!.copyWith(
                         fontWeight: FontWeight.w500,
                       ),
@@ -276,8 +280,8 @@ void _showDeleteDialog(BuildContext context, WidgetRef ref, Goal goal) async {
       final double width = 110;
       final double height = 45;
       return AlertDialog(
-        title: Text('목표 삭제하기'),
-        content: Text('삭제하면 되돌릴 수 없어요.'),
+        title: Text('루틴 삭제'),
+        content: Text('성공하지 못한 루틴은 \n삭제하면 되돌릴 수 없어요.\n정말 삭제하시겠어요?'),
         actions: [
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -296,7 +300,7 @@ void _showDeleteDialog(BuildContext context, WidgetRef ref, Goal goal) async {
                   ),
                   child: Center(
                     child: Text(
-                      '삭제',
+                      '삭제하기',
                       style: textTheme.bodyMedium!.copyWith(
                         color: Colors.white,
                         fontWeight: FontWeight.bold,
@@ -321,7 +325,7 @@ void _showDeleteDialog(BuildContext context, WidgetRef ref, Goal goal) async {
                   ),
                   child: Center(
                     child: Text(
-                      '취소',
+                      '취소하기',
                       style: textTheme.bodyMedium!.copyWith(
                         fontWeight: FontWeight.w500,
                       ),

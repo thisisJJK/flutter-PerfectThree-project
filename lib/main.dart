@@ -1,8 +1,9 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' hide DateUtils;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:perfect_three/core/theme/app_theme.dart';
 import 'package:perfect_three/core/theme/provider/theme_provider.dart';
+import 'package:perfect_three/core/utils/date_utils.dart';
 import 'package:perfect_three/data/models/goal.dart';
 import 'package:perfect_three/routes/app_router.dart';
 
@@ -16,6 +17,10 @@ void main() async {
   Hive.registerAdapter(GoalAdapter());
 
   await Hive.openBox<Goal>('goals_box');
+
+  //날짜 조작 용도 (테스트용)
+  // DateUtils.jumpTime(2);
+  print(DateUtils.now());
 
   CustomLogger.info("🚀 Perfect Three 앱이 시작됩니다. (Hive 초기화 완료)");
 

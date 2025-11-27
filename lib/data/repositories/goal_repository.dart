@@ -95,11 +95,11 @@ class GoalRepository {
         if (difference < 0) {
           continue;
         }
-        //2.진행중인 목표중에서 createdAt 날짜와 checks 이용해서 실패된 목표 찾기 (생성 날짜부터 연속으로 true가 아니면 실패)
+
         bool isFailed = false;
         final int currentDayInLoop = (difference % 3) + 1;
 
-        for (int i = 0; i < 3; i++) {
+        for (int i = 0; i < currentDayInLoop - 1; i++) {
           final bool isChecked = goal.checks[i];
           final int checkDay = i + 1;
 
@@ -111,7 +111,7 @@ class GoalRepository {
         }
         if (isFailed) {
           failedGoals.add(goal);
-          CustomLogger.warn('${goal.title} 실패');
+          CustomLogger.info('${goal.title} 실패');
         } else {
           CustomLogger.info('${goal.title} 통과');
         }
@@ -126,7 +126,6 @@ class GoalRepository {
   }
 }
 
-// Riverpod Generator를 사용하여 Provider 생성
 // 이제 앱 어디서든 ref.watch(goalRepositoryProvider)로 이 저장소를 쓸 수 있습니다.
 @Riverpod(keepAlive: true)
 GoalRepository goalRepository(GoalRepositoryRef ref) {

@@ -16,73 +16,63 @@ class OngoingGoalScreen extends ConsumerWidget {
     // ViewModel 상태 구독
     final goalsAsync = ref.watch(goalViewModelProvider);
     return Scaffold(
-      body: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.fromLTRB(20, 12, 8, 0),
-            child: CategoryChips(isOngoing: true),
-          ),
-          Expanded(
-            child: goalsAsync.when(
-              loading: () => const Center(child: CircularProgressIndicator()),
-              error: (err, stack) => Center(child: Text('에러: $err')),
-              data: (goals) {
-                final ongoingGoals = _filterOngoing(goals);
-                if (ongoingGoals.isEmpty) {
-                  return Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(Icons.flag_outlined, size: 64),
-                        const SizedBox(height: 16),
-                        Text(
-                          "아직 목표가 없어요.\n새로운 3일 도전을 시작해보세요!",
-                          textAlign: TextAlign.center,
-                        ),
-                      ],
+      body: goalsAsync.when(
+        loading: () => const Center(child: CircularProgressIndicator()),
+        error: (err, stack) => Center(child: Text('에러: $err')),
+        data: (goals) {
+          final ongoingGoals = ref.read(goalViewModelProvider.notifier).filterOngoing(goals, true);
+          if (ongoingGoals.isEmpty) {
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.flag_outlined, size: 64),
+                  const SizedBox(height: 16),
+                  Text(
+                    "아직 목표가 없어요.\n새로운 3일 도전을 시작해보세요!",
+                    textAlign: TextAlign.center,
+                  ),
+                ],
+              ),
+            );
+          }
+          // 목표 리스트 렌더링
+          return ReorderableListView.builder(
+            padding: const EdgeInsets.only(bottom: 80), // FAB와 겹치지 않게 여백
+            onReorder: (oldIndex, newIndex) {
+              ref
+                  .read(goalViewModelProvider.notifier)
+                  .reorder(oldIndex, newIndex, ongoingGoals);
+            },
+            proxyDecorator: (child, index, animation) {
+              return AnimatedBuilder(
+                animation: animation,
+                builder: (BuildContext context, Widget? child) {
+                  final double animValue = Curves.easeInOut.transform(
+                    animation.value,
+                  );
+                  final double elevation = lerpDouble(1, 6, animValue)!;
+                  final double scale = lerpDouble(1, 1.03, animValue)!;
+                  return Transform.scale(
+                    scale: scale,
+                    child: GoalCard(
+                      goal: ongoingGoals[index],
+                      elevation: elevation,
                     ),
                   );
-                }
-                // 목표 리스트 렌더링
-                return ReorderableListView.builder(
-                  padding: const EdgeInsets.only(bottom: 80), // FAB와 겹치지 않게 여백
-                  onReorder: (oldIndex, newIndex) {
-                    ref
-                        .read(goalViewModelProvider.notifier)
-                        .reorder(oldIndex, newIndex, ongoingGoals);
-                  },
-                  proxyDecorator: (child, index, animation) {
-                    return AnimatedBuilder(
-                      animation: animation,
-                      builder: (BuildContext context, Widget? child) {
-                        final double animValue = Curves.easeInOut.transform(
-                          animation.value,
-                        );
-                        final double elevation = lerpDouble(1, 6, animValue)!;
-                        final double scale = lerpDouble(1, 1.03, animValue)!;
-                        return Transform.scale(
-                          scale: scale,
-                          child: GoalCard(
-                            goal: ongoingGoals[index],
-                            elevation: elevation,
-                          ),
-                        );
-                      },
-                    );
-                  },
-                  itemCount: ongoingGoals.length,
-                  itemBuilder: (context, index) {
-                    final goal = ongoingGoals[index];
-                    return GoalCard(
-                      goal: goal,
-                      key: ValueKey(ongoingGoals[index].id),
-                    );
-                  },
-                );
-              },
-            ),
-          ),
-        ],
+                },
+              );
+            },
+            itemCount: ongoingGoals.length,
+            itemBuilder: (context, index) {
+              final goal = ongoingGoals[index];
+              return GoalCard(
+                goal: goal,
+                key: ValueKey(ongoingGoals[index].id),
+              );
+            },
+          );
+        },
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
@@ -95,8 +85,4 @@ class OngoingGoalScreen extends ConsumerWidget {
   }
 }
 
-List<Goal> _filterOngoing(List<Goal> goals) {
-  final ongoingGoals = goals.where((g) => g.isOngoing == true).toList();
 
-  return ongoingGoals;
-}
