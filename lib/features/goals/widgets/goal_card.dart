@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:perfect_three/core/theme/app_spacing.dart';
 import 'package:perfect_three/core/theme/provider/theme_provider.dart';
-import 'package:perfect_three/core/utils/date_utils.dart';
+import 'package:perfect_three/shared/utils/date_utils.dart';
 import 'package:perfect_three/features/goals/viewmodel/goal_viewmodel.dart';
 
 import '../../../../data/models/goal.dart';
@@ -71,7 +71,7 @@ class GoalCard extends ConsumerWidget {
                         : colorScheme.secondaryContainer,
                     borderRadius: BorderRadius.circular(AppSpacing.radius),
                   ),
-                  child: Text("🔥연속 ${goal.successCount}회"),
+                  child: Text("🔥누적 ${goal.successCount}회"),
                 ),
 
                 SizedBox(width: 8),

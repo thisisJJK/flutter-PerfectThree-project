@@ -3,8 +3,8 @@ import 'package:perfect_three/features/settings/view/settings_screen.dart';
 import 'package:perfect_three/features/splash/splash_screen.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-import '../features/goals/view/add_goal_screen.dart';
-import '../features/goals/view/home_screen.dart';
+import '../../features/goals/view/home_screen.dart';
+import '../../features/goals/view/ongoing/add_goal_screen.dart';
 
 part 'app_router.g.dart';
 
@@ -32,12 +32,13 @@ GoRouter appRouter(AppRouterRef ref) {
             name: 'add_goal',
             builder: (context, state) => const AddGoalScreen(),
           ),
-          GoRoute(
-            path: '/settings',
-            name: 'settings',
-            builder: (context, state) => const SettingsScreen(),
-          ),
         ],
+      ),
+      // 3. 설정 화면
+      GoRoute(
+        path: '/settings',
+        name: 'settings',
+        builder: (context, state) => const SettingsScreen(),
       ),
     ],
   );

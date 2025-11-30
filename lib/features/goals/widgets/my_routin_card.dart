@@ -67,7 +67,7 @@ class MyRoutinCard extends ConsumerWidget {
                     //타이틀
                     Text(goal.title, style: TextStyle(fontSize: 18)),
                     Spacer(),
-                    //연속 횟수
+                    //누적 횟수
                     Container(
                       padding: const EdgeInsets.symmetric(
                         horizontal: AppSpacing.sm,
@@ -79,7 +79,7 @@ class MyRoutinCard extends ConsumerWidget {
                             : colorScheme.secondaryContainer,
                         borderRadius: BorderRadius.circular(AppSpacing.radius),
                       ),
-                      child: Text("🔥연속 ${goal.successCount}회"),
+                      child: Text("🔥누적 ${goal.successCount}회"),
                     ),
                   ],
                 ),
@@ -131,13 +131,13 @@ void _showRetryDialog(BuildContext context, WidgetRef ref, Goal goal) async {
                   height: height,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(12),
-                    color: Colors.red,
+                    color:colorScheme.primaryContainer,
                   ),
                   child: Center(
                     child: Text(
                       '시작하기',
                       style: textTheme.bodyMedium!.copyWith(
-                        color: Colors.white,
+
                         fontWeight: FontWeight.bold,
                       ),
                     ),

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
-import '../../core/utils/ad_helper.dart';
-import '../../core/utils/custom_logger.dart';
+import '../utils/ad_helper.dart';
+import '../utils/custom_logger.dart';
 
 class BottomBannerAd extends StatefulWidget {
   const BottomBannerAd({super.key});

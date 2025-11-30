@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart'; // Hive 추가
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-import '../../utils/custom_logger.dart';
+import '../../../shared/utils/custom_logger.dart';
 
 part 'theme_provider.g.dart'; // 코드 생성 파일
 

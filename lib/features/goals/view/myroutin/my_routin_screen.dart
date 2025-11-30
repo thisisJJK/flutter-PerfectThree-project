@@ -24,8 +24,8 @@ class MyRoutinScreen extends ConsumerWidget {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(Icons.flag_outlined, size: 64),
-                  const SizedBox(height: 16),
+                  Icon(Icons.extension, size: 58),
+                  const SizedBox(height: 24),
                   Text(
                     "아직 내 습관이 없어요.\n진행중인 3일 도전을 마무리해보세요!",
                     textAlign: TextAlign.center,

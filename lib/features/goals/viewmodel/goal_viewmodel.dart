@@ -1,12 +1,12 @@
 // 파일 위치: lib/features/goals/viewmodel/goal_viewmodel.dart
 
-import 'package:perfect_three/core/utils/date_utils.dart';
+import 'package:perfect_three/shared/utils/date_utils.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../../../data/models/goal.dart';
 import '../../../../data/repositories/goal_repository.dart';
-import '../../../core/utils/custom_logger.dart';
+import '../../../shared/utils/custom_logger.dart';
 
 part 'goal_viewmodel.g.dart';
 
@@ -153,7 +153,7 @@ class GoalViewModel extends _$GoalViewModel {
       List<Goal> goals = await _repository.getGoals();
       final failedGoals = await _repository.getFailedGoals(goals);
 
-      if (failedGoals!.isEmpty) {
+      if (failedGoals.isEmpty) {
         CustomLogger.info("리셋할 목표가 없습니다. 로직 종료.");
         return;
       }
@@ -229,7 +229,7 @@ class GoalViewModel extends _$GoalViewModel {
   Future<void> toggleIsOngoing(Goal currentGoal, bool isRetry) async {
     try {
       final updatedGoal = currentGoal.copyWith(
-        isOngoing: currentGoal.isOngoing = !currentGoal.isOngoing,
+        isOngoing: !currentGoal.isOngoing,
         successCount: isRetry
             ? currentGoal.successCount
             : currentGoal.successCount + 1,
@@ -243,14 +243,6 @@ class GoalViewModel extends _$GoalViewModel {
       CustomLogger.info('진행 토글 성공');
     } catch (e, t) {
       CustomLogger.error('진행 토글 실패 e: $e , t: $t');
-    }
-  }
-
-  void toggleIsStatsScreen(int value) {
-    if (value == 2) {
-      isStatsScreen = true;
-    } else {
-      isStatsScreen = false;
     }
   }
 }

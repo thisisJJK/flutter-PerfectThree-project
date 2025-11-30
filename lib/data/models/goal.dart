@@ -1,5 +1,5 @@
 import 'package:hive/hive.dart';
-import 'package:perfect_three/core/utils/date_utils.dart';
+import 'package:perfect_three/shared/utils/date_utils.dart';
 
 part 'goal.g.dart';
 

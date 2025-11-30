@@ -16,28 +16,32 @@ dependencies:
   
 
   # [화면 이동] 화면 간의 이동(라우팅)을 쉽고 직관적으로 처리
-  go_router: 
+  go_router: ^17.0.0
 
   # [로컬 데이터베이스] 데이터를 폰에 빠르고 안전하게 저장 (Hive)
-  hive: 
-  hive_flutter: 
+  hive: ^2.2.3
+  hive_flutter: ^1.1.0
   
 
   # [광고] 수익화를 위한 구글 애드몹
   google_mobile_ads: ^6.0.0
 
   # [유틸리티] 날짜 포맷, 다국어 지원 등을 도움
-  intl: 
+  intl: ^0.20.2
 
   # [로깅] 개발 중 로그를 예쁘고 보기 쉽게 출력
-  logger: 
+  logger: ^2.6.2
 
   # [경로] 파일 시스템 경로를 쉽게 찾게 해줌
-  path_provider: 
+  path_provider: ^2.1.5
+  # [앱 정보] 앱 버전, 패키지명 등 정보 가져오기
+  package_info_plus: ^8.1.1
   # [모델] 고유 id 생성
   uuid:
   # [폰트]
   google_fonts: ^6.3.2
+  # [이모티콘]
+  cupertino_icons: ^1.0.8
 
 dev_dependencies:
   flutter_test:
@@ -46,12 +50,12 @@ dev_dependencies:
   # [코드 생성] 반복적인 코드를 자동으로 작성해주는 도구들
   build_runner: ^2.4.13 
   riverpod_generator: ^2.4.0
-  hive_generator: 
-  analyzer: 
+  hive_generator: ^2.0.1
+  analyzer: ^6.4.1
   
   
   # [린트] 코드를 깔끔하고 규격에 맞게 작성하도록 도와줌
-  flutter_lints: 
+  flutter_lints: ^6.0.0 
 
 flutter:
   uses-material-design: true

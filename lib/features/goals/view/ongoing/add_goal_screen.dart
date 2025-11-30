@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:perfect_three/features/ads/banner_ad_widget.dart';
+import 'package:perfect_three/shared/ads/banner_ad_widget.dart';
 import 'package:perfect_three/features/goals/viewmodel/goal_viewmodel.dart';
 import 'package:perfect_three/features/goals/widgets/category_chips.dart';
 
@@ -32,7 +32,9 @@ class _AddGoalScreenState extends ConsumerState<AddGoalScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      appBar: AppBar(title: const Text("습관 만들기")),
+      appBar: AppBar(
+        title: const Text("습관 만들기"),
+      ),
       body: Padding(
         padding: const EdgeInsets.all(24.0),
         child: Column(

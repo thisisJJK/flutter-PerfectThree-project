@@ -1,9 +1,9 @@
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:perfect_three/core/utils/app_error.dart';
-import 'package:perfect_three/core/utils/date_utils.dart';
+import 'package:perfect_three/shared/utils/app_error.dart';
+import 'package:perfect_three/shared/utils/date_utils.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-import '../../core/utils/custom_logger.dart';
+import '../../shared/utils/custom_logger.dart';
 import '../models/goal.dart';
 
 part 'goal_repository.g.dart';
@@ -81,7 +81,7 @@ class GoalRepository {
     }
   }
 
-  Future<List<Goal>?> getFailedGoals(List<Goal> goals) async {
+  Future<List<Goal>> getFailedGoals(List<Goal> goals) async {
     List<Goal> failedGoals = [];
     try {
       //1.전체 목표 리스트에서 isOngoing = true 인 목표 찾기
@@ -121,7 +121,8 @@ class GoalRepository {
       return failedGoals;
     } catch (e, stackTrace) {
       CustomLogger.error("리셋 실패", e, stackTrace);
-      return failedGoals;
+      // 에러 발생 시 빈 리스트 반환
+      return [];
     }
   }
 }

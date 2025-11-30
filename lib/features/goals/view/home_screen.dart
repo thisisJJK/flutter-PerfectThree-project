@@ -5,11 +5,11 @@ import 'package:perfect_three/core/theme/app_colors.dart';
 import 'package:perfect_three/core/theme/app_spacing.dart';
 import 'package:perfect_three/core/theme/app_theme.dart';
 import 'package:perfect_three/core/theme/provider/theme_provider.dart';
-import 'package:perfect_three/features/ads/banner_ad_widget.dart';
-import 'package:perfect_three/features/goals/view/my_routin_screen.dart';
-import 'package:perfect_three/features/goals/view/ongoing_goal_screen.dart';
-import 'package:perfect_three/features/goals/view/stats_screen.dart';
-import 'package:perfect_three/features/goals/viewmodel/goal_viewmodel.dart';
+import 'package:perfect_three/shared/ads/banner_ad_widget.dart';
+import 'package:perfect_three/features/goals/provider/screen_provider.dart';
+import 'package:perfect_three/features/goals/view/myroutin/my_routin_screen.dart';
+import 'package:perfect_three/features/goals/view/ongoing/ongoing_goal_screen.dart';
+import 'package:perfect_three/features/goals/view/stats/stats_screen.dart';
 import 'package:perfect_three/features/goals/widgets/category_chips.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
@@ -19,14 +19,13 @@ class HomeScreen extends ConsumerStatefulWidget {
   ConsumerState<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends ConsumerState<HomeScreen> {
+class _HomeScreenState extends ConsumerState<HomeScreen>
+    with SingleTickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     final themeMode = ref.watch(themeModeNotifierProvider).value;
     final isDark = themeMode == ThemeMode.dark;
-    final isStatsScreen = ref
-        .watch(goalViewModelProvider.notifier)
-        .isStatsScreen;
+    final isStatsScreen = ref.watch(screenProvider);
 
     return Scaffold(
       body: DefaultTabController(
@@ -79,14 +78,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                           color: Colors.white70,
                         ),
                         unselectedLabelStyle: Font.jua.copyWith(fontSize: 15),
-
-                        onTap: (value) {
-                          setState(() {
-                            ref
-                                .read(goalViewModelProvider.notifier)
-                                .toggleIsStatsScreen(value);
-                          });
-                        },
+                        onTap: (index) =>
+                            ref.read(screenProvider.notifier).state =
+                                index == 2,
                         tabs: [
                           Center(child: Text('진행중')),
                           Center(child: Text('내 루틴')),
@@ -105,6 +99,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             ),
           ),
           body: TabBarView(
+            physics: NeverScrollableScrollPhysics(),
             children: [OngoingGoalScreen(), MyRoutinScreen(), StatsScreen()],
           ),
         ),

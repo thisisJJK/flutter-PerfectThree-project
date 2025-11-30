@@ -3,9 +3,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:perfect_three/data/models/goal.dart';
 import 'package:perfect_three/features/goals/viewmodel/goal_viewmodel.dart';
-import 'package:perfect_three/features/goals/widgets/category_chips.dart';
 import 'package:perfect_three/features/goals/widgets/goal_card.dart';
 
 class OngoingGoalScreen extends ConsumerWidget {
@@ -20,13 +18,15 @@ class OngoingGoalScreen extends ConsumerWidget {
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (err, stack) => Center(child: Text('에러: $err')),
         data: (goals) {
-          final ongoingGoals = ref.read(goalViewModelProvider.notifier).filterOngoing(goals, true);
+          final ongoingGoals = ref
+              .read(goalViewModelProvider.notifier)
+              .filterOngoing(goals, true);
           if (ongoingGoals.isEmpty) {
             return Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(Icons.flag_outlined, size: 64),
+                  Icon(Icons.flag_outlined, size: 66),
                   const SizedBox(height: 16),
                   Text(
                     "아직 목표가 없어요.\n새로운 3일 도전을 시작해보세요!",
@@ -84,5 +84,3 @@ class OngoingGoalScreen extends ConsumerWidget {
     );
   }
 }
-
-

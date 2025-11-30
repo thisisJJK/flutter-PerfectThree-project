@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:perfect_three/core/theme/provider/theme_provider.dart';
 
 class SettingsScreen extends ConsumerWidget {
   const SettingsScreen({super.key});
-
-  // TODO: 실제 앱 버전을 가져오는 함수 (예: package_info_plus 패키지 사용)
-  final String _appVersion = 'v1.0.0 (Build 1)';
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -24,7 +22,7 @@ class SettingsScreen extends ConsumerWidget {
             children: [
               // 1. 다크 모드 토글 섹션
               SwitchListTile(
-                title: Text("다크 모드"),
+                title: Text("테마 모드"),
                 subtitle: Text(
                   currentThemeMode == ThemeMode.dark
                       ? "현재 다크 모드입니다"
@@ -42,37 +40,48 @@ class SettingsScreen extends ConsumerWidget {
 
               const Divider(),
 
-              // 2. 데이터 관리 섹션 (추후 Backup/Restore 기능 추가 예정)
+              // 2. 데이터 관리 섹션 (향후 구현 예정)
               ListTile(
                 leading: const Icon(Icons.archive_outlined),
-                title: Text("데이터 백업 / 복원"),
-                subtitle: const Text("모든 목표 기록을 파일로 저장합니다."),
+                title: const Text("데이터 백업 / 복원"),
+                subtitle: const Text("모든 목표 기록을 파일로 저장합니다. (준비 중)"),
                 onTap: () {
-                  // TODO: 데이터 백업/복원 로직 구현
                   ScaffoldMessenger.of(
                     context,
-                  ).showSnackBar(const SnackBar(content: Text('준비 중인 기능입니다.')));
+                  ).showSnackBar(const SnackBar(
+                    content: Text('준비 중인 기능입니다. 빠른 시일 내에 업데이트 될 예정입니다.'),
+                    duration: Duration(seconds: 2),
+                  ));
                 },
               ),
 
               const Divider(),
 
               // 3. 앱 정보 섹션
-              ListTile(
-                leading: const Icon(Icons.info_outline),
-                title: const Text("앱 정보"),
-                subtitle: Text("버전: $_appVersion"),
-                onTap: () {
-                  // AboutDialog 띄우기
-                  showAboutDialog(
-                    context: context,
-                    applicationName: 'Perfect Three',
-                    applicationVersion: _appVersion,
-                    applicationIcon: const Icon(
-                      Icons.check_circle_outline,
-                      color: Colors.blue,
-                    ),
-                    children: [const Text("3일 성공 구조를 통해 포기하지 않는 습관을 만드세요.")],
+              FutureBuilder<PackageInfo>(
+                future: PackageInfo.fromPlatform(),
+                builder: (context, snapshot) {
+                  final appVersion = snapshot.hasData
+                      ? 'v${snapshot.data!.version} (Build ${snapshot.data!.buildNumber})'
+                      : 'v1.0.0 (Build 1)';
+                  
+                  return ListTile(
+                    leading: const Icon(Icons.info_outline),
+                    title: const Text("앱 정보"),
+                    subtitle: Text("버전: $appVersion"),
+                    onTap: () {
+                      // AboutDialog 띄우기
+                      showAboutDialog(
+                        context: context,
+                        applicationName: 'Perfect Three',
+                        applicationVersion: appVersion,
+                        applicationIcon: const Icon(
+                          Icons.check_circle_outline,
+                          color: Colors.blue,
+                        ),
+                        children: [const Text("3일 성공 구조를 통해 포기하지 않는 습관을 만드세요.")],
+                      );
+                    },
                   );
                 },
               ),
@@ -82,7 +91,7 @@ class SettingsScreen extends ConsumerWidget {
                 leading: const Icon(Icons.gavel_outlined),
                 title: const Text("오픈소스 라이선스"),
                 onTap: () {
-                  // showLicensePage(context: context);
+                  showLicensePage(context: context);
                 },
               ),
             ],
