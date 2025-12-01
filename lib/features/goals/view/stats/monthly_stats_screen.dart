@@ -282,10 +282,12 @@ class _MonthlyStatsScreenState extends ConsumerState<MonthlyStatsScreen> {
                             ),
                             decoration: BoxDecoration(
                               color: isDark
-                                  ? colorScheme.tertiary.withValues(
-                                      alpha: 0.3,
-                                    )
-                                  : Colors.deepPurple.shade100,
+                                  ? AppColors.getCategoryColor(
+                                      goal.category,
+                                    ).withValues(alpha: 0.3)
+                                  : AppColors.getCategoryColor(
+                                      goal.category,
+                                    ).withValues(alpha: 0.2),
                               borderRadius: BorderRadius.circular(
                                 AppSpacing.radius,
                               ),

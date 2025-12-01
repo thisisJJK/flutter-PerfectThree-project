@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:perfect_three/core/theme/app_colors.dart';
 import 'package:perfect_three/core/theme/app_spacing.dart';
 import 'package:perfect_three/features/goals/viewmodel/goal_viewmodel.dart';
 
@@ -46,8 +47,27 @@ class CategoryChipsState extends ConsumerState<CategoryChips> {
                     ChoiceChip(
                       padding: EdgeInsets.all(AppSpacing.sm),
                       showCheckmark: false,
-                      label: Text(categoryChips[index]),
+                      label: Text(
+                        categoryChips[index],
+                        style: TextStyle(
+                          color: value == index
+                              ? Colors.white
+                              : AppColors.getCategoryColor(
+                                  categoryChips[index],
+                                ),
+                          fontWeight: value == index
+                              ? FontWeight.bold
+                              : FontWeight.normal,
+                        ),
+                      ),
                       selected: value == index,
+                      selectedColor: AppColors.getCategoryColor(
+                        categoryChips[index],
+                      ),
+                      backgroundColor: AppColors.getCategoryColor(
+                        categoryChips[index],
+                      ).withValues(alpha: 0.1),
+                      side: BorderSide.none,
                       onSelected: (bool selected) {
                         setState(() {
                           value = index;

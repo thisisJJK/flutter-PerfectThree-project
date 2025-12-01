@@ -18,4 +18,21 @@ class AppColors {
   static const accentDark = Color(0xFF00B0FF);
   static const dividerDark = Color(0xFF303030);
   static const cardDark = Color(0xFF1E1E1E);
+
+  // Category Colors
+  static const Map<String, Color> categoryColors = {
+    '일상': Color(0xFF42A5F5), // Blue
+    '아침': Color(0xFFFFA726), // Orange
+    '점심': Color.fromARGB(255, 255, 234, 45), // Yellow
+    '저녁': Color(0xFF5C6BC0), // Indigo
+    '운동': Color(0xFFEF5350), // Red
+    '업무': Color(0xFF26C6DA), // Cyan
+    '자기계발': Color(0xFFAB47BC), // Purple
+    '기타': Color(0xFFBDBDBD), // Grey
+    '전체': primary, // Default
+  };
+
+  static Color getCategoryColor(String category) {
+    return categoryColors[category] ?? primary;
+  }
 }

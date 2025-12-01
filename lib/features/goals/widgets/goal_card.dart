@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart' hide DateUtils;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:perfect_three/core/theme/app_colors.dart';
 import 'package:perfect_three/core/theme/app_spacing.dart';
 import 'package:perfect_three/core/theme/provider/theme_provider.dart';
-import 'package:perfect_three/shared/utils/date_utils.dart';
 import 'package:perfect_three/features/goals/viewmodel/goal_viewmodel.dart';
+import 'package:perfect_three/shared/utils/date_utils.dart';
 
 import '../../../../data/models/goal.dart';
 
@@ -53,8 +54,12 @@ class GoalCard extends ConsumerWidget {
                   ),
                   decoration: BoxDecoration(
                     color: isDark
-                        ? colorScheme.tertiary.withValues(alpha: 0.4)
-                        : Colors.deepPurple.shade100,
+                        ? AppColors.getCategoryColor(
+                            category,
+                          ).withValues(alpha: 0.3)
+                        : AppColors.getCategoryColor(
+                            category,
+                          ).withValues(alpha: 0.2),
                     borderRadius: BorderRadius.circular(AppSpacing.radius),
                   ),
                   child: Text(category),

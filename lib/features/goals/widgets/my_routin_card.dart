@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:perfect_three/core/theme/app_colors.dart';
 import 'package:perfect_three/core/theme/app_spacing.dart';
 import 'package:perfect_three/core/theme/provider/theme_provider.dart';
 import 'package:perfect_three/data/models/goal.dart';
@@ -56,8 +57,12 @@ class MyRoutinCard extends ConsumerWidget {
                       ),
                       decoration: BoxDecoration(
                         color: isDark
-                            ? colorScheme.tertiary.withValues(alpha: 0.4)
-                            : Colors.deepPurple.shade100,
+                            ? AppColors.getCategoryColor(
+                                goal.category,
+                              ).withValues(alpha: 0.3)
+                            : AppColors.getCategoryColor(
+                                goal.category,
+                              ).withValues(alpha: 0.2),
                         borderRadius: BorderRadius.circular(AppSpacing.radius),
                       ),
                       child: Text(goal.category),
@@ -131,13 +136,12 @@ void _showRetryDialog(BuildContext context, WidgetRef ref, Goal goal) async {
                   height: height,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(12),
-                    color:colorScheme.primaryContainer,
+                    color: colorScheme.primaryContainer,
                   ),
                   child: Center(
                     child: Text(
                       '시작하기',
                       style: textTheme.bodyMedium!.copyWith(
-
                         fontWeight: FontWeight.bold,
                       ),
                     ),

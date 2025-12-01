@@ -267,8 +267,12 @@ class AllStatsScreen extends ConsumerWidget {
                       ),
                       decoration: BoxDecoration(
                         color: isDark
-                            ? AppColors.primaryDark.withValues(alpha: 0.4)
-                            : AppColors.primary.withValues(alpha: 0.2),
+                            ? AppColors.getCategoryColor(
+                                goal.category,
+                              ).withValues(alpha: 0.3)
+                            : AppColors.getCategoryColor(
+                                goal.category,
+                              ).withValues(alpha: 0.2),
                         borderRadius: BorderRadius.circular(
                           AppSpacing.radius,
                         ),
@@ -501,25 +505,24 @@ class AllStatsScreen extends ConsumerWidget {
     final sortedCategories = categoryStats.entries.toList()
       ..sort((a, b) => b.value.compareTo(a.value));
 
-    final colors = [
-      Colors.blue,
-      Colors.green,
-      Colors.orange,
-      Colors.purple,
-      Colors.red,
-      Colors.teal,
-    ];
+    // final colors = [
+    //   Colors.blue,
+    //   Colors.green,
+    //   Colors.orange,
+    //   Colors.purple,
+    //   Colors.red,
+    //   Colors.teal,
+    // ];
 
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
-          children: sortedCategories.asMap().entries.map((entry) {
-            final index = entry.key;
-            final category = entry.value.key;
-            final count = entry.value.value;
+          children: sortedCategories.map((entry) {
+            final category = entry.key;
+            final count = entry.value;
             final percentage = (count / total * 100);
-            final color = colors[index % colors.length];
+            final color = AppColors.getCategoryColor(category);
 
             return Padding(
               padding: const EdgeInsets.only(bottom: 12.0),
