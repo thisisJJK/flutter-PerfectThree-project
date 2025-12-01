@@ -49,8 +49,8 @@ class StatsScreen extends ConsumerWidget {
             unselectedLabelStyle: Font.jua.copyWith(fontSize: 15),
             onTap: (index) {},
             tabs: [
-              Center(child: Text('ALL')),
-              Center(child: Text('MONTHLY')),
+              Center(child: Text('전체')),
+              Center(child: Text('월별')),
             ],
           ),
         ),
