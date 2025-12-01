@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:perfect_three/core/theme/app_colors.dart';
 
 class StatCard extends StatelessWidget {
   final String label;
@@ -6,6 +7,7 @@ class StatCard extends StatelessWidget {
   final IconData icon;
   final Color? color;
   final String? subtitle;
+  final bool isDark;
 
   const StatCard({
     super.key,
@@ -14,11 +16,13 @@ class StatCard extends StatelessWidget {
     required this.icon,
     this.color,
     this.subtitle,
+    required this.isDark,
   });
 
   @override
   Widget build(BuildContext context) {
-    final effectiveColor = color ?? Theme.of(context).primaryColor;
+    final effectiveColor = color ?? AppColors.primary;
+    final effectiveDarkColor = color ?? AppColors.primaryDark;
 
     return Card(
       elevation: 2,
@@ -36,7 +40,9 @@ class StatCard extends StatelessWidget {
                 Icon(
                   icon,
                   size: 20,
-                  color: effectiveColor.withOpacity(0.7),
+                  color: isDark
+                      ? effectiveDarkColor.withOpacity(0.7)
+                      : effectiveColor.withOpacity(0.7),
                 ),
                 const SizedBox(width: 8),
                 Expanded(
@@ -44,7 +50,7 @@ class StatCard extends StatelessWidget {
                     label,
                     style: TextStyle(
                       fontSize: 12,
-                      color: Colors.grey.shade600,
+
                       fontWeight: FontWeight.w500,
                     ),
                   ),
@@ -57,7 +63,7 @@ class StatCard extends StatelessWidget {
               style: TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
-                color: effectiveColor,
+                color: isDark ? effectiveDarkColor : effectiveColor,
               ),
             ),
             if (subtitle != null) ...[

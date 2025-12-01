@@ -18,9 +18,16 @@ class OngoingGoalScreen extends ConsumerWidget {
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (err, stack) => Center(child: Text('에러: $err')),
         data: (goals) {
-          final ongoingGoals = ref
+          final selectedCategory = ref.watch(categoryFilterProvider);
+          final allOngoingGoals = ref
               .read(goalViewModelProvider.notifier)
               .filterOngoing(goals, true);
+
+          final ongoingGoals = selectedCategory == '전체'
+              ? allOngoingGoals
+              : allOngoingGoals
+                    .where((g) => g.category == selectedCategory)
+                    .toList();
           if (ongoingGoals.isEmpty) {
             return Center(
               child: Column(

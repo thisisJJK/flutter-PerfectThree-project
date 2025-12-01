@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:perfect_three/core/theme/app_colors.dart';
 import 'package:perfect_three/core/theme/app_spacing.dart';
 import 'package:perfect_three/core/theme/provider/theme_provider.dart';
 import 'package:perfect_three/features/goals/viewmodel/goal_viewmodel.dart';
@@ -151,7 +152,7 @@ class AllStatsScreen extends ConsumerWidget {
             ..sort((a, b) => b.value.compareTo(a.value));
 
           return ListView(
-            padding: const EdgeInsets.fromLTRB(16, 16, 16, 72),
+            padding: const EdgeInsets.fromLTRB(16, 16, 16, 88),
 
             children: [
               // Heatmap Visualization
@@ -161,49 +162,59 @@ class AllStatsScreen extends ConsumerWidget {
               ),
               const SizedBox(height: 16),
               _buildHeatmap(context, dailySuccessCounts, isDark),
-              const SizedBox(height: 24),
+              const SizedBox(height: 16),
+              const Text(
+                '전체 분석',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
               // Stats Grid
               GridView.count(
                 crossAxisCount: 2,
                 shrinkWrap: true,
                 physics: const NeverScrollableScrollPhysics(),
-                mainAxisSpacing: 12,
-                crossAxisSpacing: 12,
-                childAspectRatio: 1.3,
+                mainAxisSpacing: 4,
+                crossAxisSpacing: 4,
+                childAspectRatio: 1.5,
                 children: [
                   StatCard(
                     label: '총 누적 성공',
                     value: '$totalSuccesses회',
                     icon: Icons.check_circle,
+                    color: Colors.green,
+                    isDark: true,
                   ),
                   StatCard(
                     label: '활동 일수',
                     value: '$totalActiveDays일',
                     icon: Icons.calendar_month,
+                    color: Colors.blue.withValues(alpha: 0.7),
+                    isDark: true,
                   ),
-                  StatCard(
-                    label: '전체 성공률',
-                    value: '${overallSuccessRate.toStringAsFixed(1)}%',
-                    icon: Icons.percent,
-                  ),
+                  // StatCard(
+                  //   label: '전체 성공률',
+                  //   value: '${overallSuccessRate.toStringAsFixed(1)}%',
+                  //   icon: Icons.percent,
+                  // ),
                   StatCard(
                     label: '최장 연속',
                     value: '$longestStreak일',
                     icon: Icons.emoji_events,
                     color: Colors.amber,
+                    isDark: true,
                   ),
                   StatCard(
                     label: '현재 연속',
                     value: '$currentStreak일',
                     icon: Icons.local_fire_department,
-                    color: currentStreak > 0 ? Colors.orange : Colors.grey,
+                    color: Colors.red.withValues(alpha: 0.8),
+                    isDark: true,
                   ),
-                  StatCard(
-                    label: '주평균',
-                    value: weeklyAverage.toStringAsFixed(1),
-                    icon: Icons.show_chart,
-                    subtitle: '회/주',
-                  ),
+                  // StatCard(
+                  //   label: '주평균',
+                  //   value: weeklyAverage.toStringAsFixed(1),
+                  //   icon: Icons.show_chart,
+                  //   subtitle: '회/주',
+                  // ),
                 ],
               ),
               const SizedBox(height: 24),
@@ -256,10 +267,8 @@ class AllStatsScreen extends ConsumerWidget {
                       ),
                       decoration: BoxDecoration(
                         color: isDark
-                            ? Theme.of(
-                                context,
-                              ).colorScheme.tertiary.withValues(alpha: 0.4)
-                            : Colors.deepPurple.shade100,
+                            ? AppColors.primaryDark.withValues(alpha: 0.4)
+                            : AppColors.primary.withValues(alpha: 0.2),
                         borderRadius: BorderRadius.circular(
                           AppSpacing.radius,
                         ),
@@ -273,9 +282,9 @@ class AllStatsScreen extends ConsumerWidget {
                         vertical: 6,
                       ),
                       decoration: BoxDecoration(
-                        color: Theme.of(
-                          context,
-                        ).primaryColor.withOpacity(0.1),
+                        color: isDark
+                            ? AppColors.primaryDark.withValues(alpha: 0.1)
+                            : AppColors.primary.withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: Row(
@@ -284,13 +293,17 @@ class AllStatsScreen extends ConsumerWidget {
                           Icon(
                             CupertinoIcons.triangle_fill,
                             size: 12,
-                            color: Theme.of(context).primaryColor,
+                            color: isDark
+                                ? AppColors.primaryDark.withValues(alpha: 0.7)
+                                : AppColors.primary.withValues(alpha: 0.7),
                           ),
                           const SizedBox(width: 4),
                           Text(
                             '${entry.value}',
                             style: TextStyle(
-                              color: Theme.of(context).primaryColor,
+                              color: isDark
+                                  ? AppColors.primaryDark.withValues(alpha: 0.7)
+                                  : AppColors.primary.withValues(alpha: 0.7),
                               fontWeight: FontWeight.bold,
                             ),
                           ),
@@ -379,9 +392,9 @@ class AllStatsScreen extends ConsumerWidget {
       return isDark ? Colors.white.withOpacity(0.05) : Colors.grey.shade200;
     }
 
-    final baseColor = Theme.of(context).primaryColor;
-    if (count == 1) return baseColor.withOpacity(0.3);
-    if (count == 2) return baseColor.withOpacity(0.6);
+    final baseColor = isDark ? AppColors.primaryDark : AppColors.primary;
+    if (count == 1) return baseColor.withOpacity(0.33);
+    if (count == 2) return baseColor.withOpacity(0.66);
     return baseColor;
   }
 
@@ -438,7 +451,9 @@ class AllStatsScreen extends ConsumerWidget {
                             fontWeight: FontWeight.bold,
                             color: isMostProductive
                                 ? Colors.amber
-                                : Theme.of(context).primaryColor,
+                                : isDark
+                                ? AppColors.primaryDark.withOpacity(0.7)
+                                : AppColors.primary.withOpacity(0.5),
                           ),
                         ),
                         const SizedBox(height: 4),
@@ -447,7 +462,9 @@ class AllStatsScreen extends ConsumerWidget {
                           decoration: BoxDecoration(
                             color: isMostProductive
                                 ? Colors.amber
-                                : Theme.of(context).primaryColor,
+                                : isDark
+                                ? AppColors.primaryDark.withOpacity(0.5)
+                                : AppColors.primary.withOpacity(0.5),
                             borderRadius: const BorderRadius.vertical(
                               top: Radius.circular(4),
                             ),

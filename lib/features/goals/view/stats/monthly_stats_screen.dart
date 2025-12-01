@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:flutter/material.dart' hide DateUtils;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
+import 'package:perfect_three/core/theme/app_colors.dart';
 import 'package:perfect_three/core/theme/app_spacing.dart';
 import 'package:perfect_three/core/theme/provider/theme_provider.dart';
 import 'package:perfect_three/features/goals/viewmodel/goal_viewmodel.dart';
@@ -173,43 +174,56 @@ class _MonthlyStatsScreenState extends ConsumerState<MonthlyStatsScreen> {
                 final weeklyBreakdown = _getWeeklyBreakdown(allSuccessDates);
 
                 return ListView(
-                  padding: const EdgeInsets.fromLTRB(16, 8, 16, 72),
+                  padding: const EdgeInsets.fromLTRB(16, 0, 16, 88),
                   children: [
+                    const Text(
+                      '월간 분석',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
                     // Stats Grid
                     GridView.count(
                       crossAxisCount: 2,
                       shrinkWrap: true,
                       physics: const NeverScrollableScrollPhysics(),
-                      mainAxisSpacing: 12,
-                      crossAxisSpacing: 12,
-                      childAspectRatio: 1.3,
+                      mainAxisSpacing: 4,
+                      crossAxisSpacing: 4,
+                      childAspectRatio: 1.5,
                       children: [
                         StatCard(
                           label: '총 성공',
                           value: '$totalSuccesses회',
                           icon: Icons.check_circle,
+                          color: Colors.green,
+                          isDark: true,
                         ),
-                        StatCard(
-                          label: '성공률',
-                          value: '${successRate.toStringAsFixed(1)}%',
-                          icon: Icons.percent,
-                          subtitle: '$possibleChecks회 중',
-                        ),
-                        StatCard(
-                          label: '일평균',
-                          value: dailyAverage.toStringAsFixed(1),
-                          icon: Icons.calendar_today,
-                          subtitle: '회/일',
-                        ),
+                        // StatCard(
+                        //   label: '성공률',
+                        //   value: '${successRate.toStringAsFixed(1)}%',
+                        //   icon: Icons.percent,
+                        //   subtitle: '$possibleChecks회 중',
+                        // ),
+                        // StatCard(
+                        //   label: '일평균',
+                        //   value: dailyAverage.toStringAsFixed(1),
+                        //   icon: Icons.calendar_today,
+                        //   subtitle: '회/일',
+                        // ),
                         StatCard(
                           label: '최고 연속',
                           value: '$bestStreak일',
                           icon: Icons.local_fire_department,
+                          color: Colors.redAccent,
+                          isDark: true,
                         ),
                         StatCard(
                           label: '활성 목표',
                           value: '$activeGoalsCount개',
                           icon: Icons.flag,
+                          color: Colors.blue,
+                          isDark: true,
                         ),
                         StatCard(
                           label: '전월 대비',
@@ -218,7 +232,8 @@ class _MonthlyStatsScreenState extends ConsumerState<MonthlyStatsScreen> {
                               ? Icons.trending_up
                               : Icons.trending_down,
                           color: monthDiff >= 0 ? Colors.green : Colors.orange,
-                          subtitle: '회',
+                          isDark: true,
+                          // subtitle: '회',
                         ),
                       ],
                     ),
@@ -254,6 +269,9 @@ class _MonthlyStatsScreenState extends ConsumerState<MonthlyStatsScreen> {
                           .watch(themeModeNotifierProvider)
                           .value;
                       final isDark = themeMode == ThemeMode.dark;
+                      final color = isDark
+                          ? colorScheme.tertiary.withValues(alpha: 0.8)
+                          : Colors.deepPurple.shade400;
                       return Card(
                         margin: const EdgeInsets.only(bottom: 8),
                         child: ListTile(
@@ -265,7 +283,7 @@ class _MonthlyStatsScreenState extends ConsumerState<MonthlyStatsScreen> {
                             decoration: BoxDecoration(
                               color: isDark
                                   ? colorScheme.tertiary.withValues(
-                                      alpha: 0.4,
+                                      alpha: 0.3,
                                     )
                                   : Colors.deepPurple.shade100,
                               borderRadius: BorderRadius.circular(
@@ -281,15 +299,13 @@ class _MonthlyStatsScreenState extends ConsumerState<MonthlyStatsScreen> {
                               vertical: 6,
                             ),
                             decoration: BoxDecoration(
-                              color: Theme.of(
-                                context,
-                              ).primaryColor.withOpacity(0.1),
+                              color: color.withOpacity(0.2),
                               borderRadius: BorderRadius.circular(12),
                             ),
                             child: Text(
                               '${entry.value}회',
                               style: TextStyle(
-                                color: Theme.of(context).primaryColor,
+                                color: color,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
@@ -339,14 +355,14 @@ class _MonthlyStatsScreenState extends ConsumerState<MonthlyStatsScreen> {
                           style: TextStyle(
                             fontSize: 12,
                             fontWeight: FontWeight.bold,
-                            color: Theme.of(context).primaryColor,
+                            color: AppColors.primary,
                           ),
                         ),
                         const SizedBox(height: 4),
                         Container(
                           height: height.clamp(20, 100),
                           decoration: BoxDecoration(
-                            color: Theme.of(context).primaryColor,
+                            color: AppColors.primary.withValues(alpha: 0.4),
                             borderRadius: const BorderRadius.vertical(
                               top: Radius.circular(4),
                             ),

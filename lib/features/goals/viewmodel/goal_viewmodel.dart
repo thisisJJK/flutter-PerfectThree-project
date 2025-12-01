@@ -202,19 +202,19 @@ class GoalViewModel extends _$GoalViewModel {
     state = AsyncValue.data(updated);
   }
 
-  Future<void> categoryFilter(String category) async {
-    try {
-      final goals = await getGoals();
-      final List<Goal> filtered = goals
-          .where((g) => g.category == category)
-          .toList();
+  // Future<void> categoryFilter(String category) async {
+  //   try {
+  //     final goals = await getGoals();
+  //     final List<Goal> filtered = goals
+  //         .where((g) => g.category == category)
+  //         .toList();
 
-      state = AsyncValue.data(filtered);
-      CustomLogger.info('카테고리 필터 성공 $filtered');
-    } catch (e, t) {
-      CustomLogger.error('카테고리 핉터 실패 e: $e ,t: $t');
-    }
-  }
+  //     state = AsyncValue.data(filtered);
+  //     CustomLogger.info('카테고리 필터 성공 $filtered');
+  //   } catch (e, t) {
+  //     CustomLogger.error('카테고리 핉터 실패 e: $e ,t: $t');
+  //   }
+  // }
 
   List<Goal> filterOngoing(List<Goal> goals, bool isOngoing) {
     final ongoingGoals = goals.where((g) => g.isOngoing == isOngoing).toList();
@@ -248,5 +248,17 @@ class GoalViewModel extends _$GoalViewModel {
     } catch (e, t) {
       CustomLogger.error('진행 토글 실패 e: $e , t: $t');
     }
+  }
+}
+
+@riverpod
+class CategoryFilter extends _$CategoryFilter {
+  @override
+  String build() {
+    return '전체';
+  }
+
+  void setCategory(String category) {
+    state = category;
   }
 }

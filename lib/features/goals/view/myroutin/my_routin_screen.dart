@@ -16,9 +16,16 @@ class MyRoutinScreen extends ConsumerWidget {
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (err, stack) => Center(child: Text('에러: $err')),
         data: (goals) {
-          final ongoingFalseGoals = ref
+          final selectedCategory = ref.watch(categoryFilterProvider);
+          final allOngoingFalseGoals = ref
               .read(goalViewModelProvider.notifier)
               .filterOngoing(goals, false);
+
+          final ongoingFalseGoals = selectedCategory == '전체'
+              ? allOngoingFalseGoals
+              : allOngoingFalseGoals
+                    .where((g) => g.category == selectedCategory)
+                    .toList();
           if (ongoingFalseGoals.isEmpty) {
             return Center(
               child: Column(

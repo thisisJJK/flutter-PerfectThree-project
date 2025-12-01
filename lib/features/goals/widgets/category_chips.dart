@@ -53,16 +53,9 @@ class CategoryChipsState extends ConsumerState<CategoryChips> {
                           value = index;
 
                           //카테고리별 필터
-                          //전체 => 전체 습관 리스트
-                          if (index == 0) {
-                            ref.watch(goalViewModelProvider.notifier).build();
-                          }
-                          //카테고리별 습관 리스트
-                          if (index > 0) {
-                            ref
-                                .watch(goalViewModelProvider.notifier)
-                                .categoryFilter(categoryChips[index]);
-                          }
+                          ref
+                              .read(categoryFilterProvider.notifier)
+                              .setCategory(categoryChips[index]);
                         });
                       },
                     ),
