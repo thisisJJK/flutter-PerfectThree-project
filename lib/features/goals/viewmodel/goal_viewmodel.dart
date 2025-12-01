@@ -131,6 +131,7 @@ class GoalViewModel extends _$GoalViewModel {
         lastUpdatedDate: DateUtils.now(),
         createdAt: DateUtils.now(),
         lastDay: false,
+        successDates: [...currentGoal.successDates, DateUtils.now()],
       );
 
       // DB 저장
@@ -233,6 +234,9 @@ class GoalViewModel extends _$GoalViewModel {
         successCount: isRetry
             ? currentGoal.successCount
             : currentGoal.successCount + 1,
+        successDates: isRetry
+            ? currentGoal.successDates
+            : [...currentGoal.successDates, DateUtils.now()],
         checks: [false, false, false],
         lastUpdatedDate: DateUtils.now(),
         lastDay: false,

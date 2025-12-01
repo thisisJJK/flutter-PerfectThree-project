@@ -6,7 +6,7 @@ part of 'app_router.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$appRouterHash() => r'beae584f71bb411246a8f89e1b4035c5eb7e4a34';
+String _$appRouterHash() => r'34b190205a62b413733488150ae9915b6831af30';
 
 /// [AppRouter]
 /// 앱의 모든 화면 이동 경로를 정의합니다.

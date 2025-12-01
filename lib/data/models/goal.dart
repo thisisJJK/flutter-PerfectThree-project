@@ -38,6 +38,9 @@ class Goal extends HiveObject {
   @HiveField(9)
   String category;
 
+  @HiveField(10)
+  List<DateTime> successDates; // 성공한 날짜 기록
+
   Goal({
     required this.id,
     required this.title,
@@ -49,6 +52,7 @@ class Goal extends HiveObject {
     required this.createdAt,
     this.lastDay = false,
     required this.category,
+    required this.successDates,
   });
 
   /// 초기 목표 생성을 위한 팩토리 메서드
@@ -71,6 +75,7 @@ class Goal extends HiveObject {
       createdAt: createdAt,
       lastDay: false,
       category: category,
+      successDates: [],
     );
   }
 
@@ -85,6 +90,7 @@ class Goal extends HiveObject {
     DateTime? createdAt,
     bool? lastDay,
     String? category,
+    List<DateTime>? successDates,
   }) {
     return Goal(
       id: id, // ID는 변경 불가
@@ -97,6 +103,7 @@ class Goal extends HiveObject {
       createdAt: createdAt ?? this.createdAt,
       lastDay: lastDay ?? this.lastDay,
       category: category ?? this.category,
+      successDates: successDates ?? this.successDates,
     );
   }
 }

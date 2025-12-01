@@ -5,6 +5,7 @@ import 'package:perfect_three/core/routes/app_router.dart';
 import 'package:perfect_three/core/theme/app_theme.dart';
 import 'package:perfect_three/core/theme/provider/theme_provider.dart';
 import 'package:perfect_three/data/models/goal.dart';
+import 'package:perfect_three/shared/utils/date_utils.dart';
 
 import 'shared/utils/custom_logger.dart';
 
@@ -16,6 +17,8 @@ void main() async {
   Hive.registerAdapter(GoalAdapter());
 
   await Hive.openBox<Goal>('goals_box');
+
+  DateUtils.jumpTime(8);
 
   CustomLogger.info("🚀 Perfect Three 앱이 시작됩니다. (Hive 초기화 완료)");
 
