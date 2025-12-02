@@ -7,82 +7,95 @@ import 'package:perfect_three/core/theme/provider/theme_provider.dart';
 import 'package:perfect_three/features/goals/viewmodel/goal_viewmodel.dart';
 
 /// iOS 세그먼트 컨트롤 스타일 카테고리 칩
-class CategoryChips extends ConsumerStatefulWidget {
+/// iOS 세그먼트 컨트롤 스타일 카테고리 칩
+class CategoryChips extends ConsumerWidget {
   final bool isOngoing;
+  final bool isScrollable;
+  final String? selectedCategory;
+  final ValueChanged<String>? onSelected;
+  final bool showAllOption;
 
-  const CategoryChips({super.key, required this.isOngoing});
-
-  @override
-  CategoryChipsState createState() => CategoryChipsState();
-}
-
-class CategoryChipsState extends ConsumerState<CategoryChips> {
-  List<String> categoryChips = [
-    '전체',
-    '일상',
-    '아침',
-    '점심',
-    '저녁',
-    '운동',
-    '업무',
-    '자기계발',
-    '기타',
-  ];
-  int? value = 0;
+  const CategoryChips({
+    super.key,
+    required this.isOngoing,
+    this.isScrollable = true,
+    this.selectedCategory,
+    this.onSelected,
+    this.showAllOption = true,
+  });
 
   @override
-  Widget build(BuildContext context) {
-    return widget.isOngoing
-        ? SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: Row(
-              children: List.generate(categoryChips.length, (int index) {
-                final isSelected = value == index;
-                final category = categoryChips[index];
-                final categoryColor = AppColors.getCategoryColor(category);
+  Widget build(BuildContext context, WidgetRef ref) {
+    // 외부에서 선택된 카테고리를 주입받으면 그것을 사용, 아니면 프로바이더 사용
+    final currentCategory =
+        selectedCategory ?? ref.watch(categoryFilterProvider);
 
-                return Padding(
-                  padding: EdgeInsets.only(right: AppSpacing.s),
-                  child: _IOSStyleChip(
-                    label: category,
-                    isSelected: isSelected,
-                    color: categoryColor,
-                    onTap: () {
-                      setState(() {
-                        value = index;
-                        ref
-                            .read(categoryFilterProvider.notifier)
-                            .setCategory(category);
-                      });
-                    },
-                  ),
-                );
-              }).toList(),
-            ),
-          )
-        : Wrap(
-            spacing: AppSpacing.s,
-            runSpacing: AppSpacing.s,
-            children: List.generate(categoryChips.length - 1, (int index) {
-              final category = categoryChips[index + 1];
-              final isSelected = value == index;
-              final categoryColor = AppColors.getCategoryColor(category);
+    final List<String> allCategories = [
+      '전체',
+      '일상',
+      '아침',
+      '점심',
+      '저녁',
+      '운동',
+      '업무',
+      '자기계발',
+      '기타',
+    ];
 
-              return _IOSStyleChip(
-                label: category,
-                isSelected: isSelected,
-                color: categoryColor,
-                onTap: () {
-                  setState(() {
-                    value = index;
-                    ref
-                        .read(goalViewModelProvider.notifier)
-                        .updateCategory(category);
-                  });
-                },
-              );
-            }).toList(),
-          );
+    final List<String> categoryChips = showAllOption
+        ? allCategories
+        : allCategories.where((c) => c != '전체').toList();
+
+    void onCategoryTap(String category) {
+      if (onSelected != null) {
+        // 외부 콜백이 있으면 호출
+        onSelected!(category);
+      } else {
+        // 없으면 기존 로직 (필터링)
+        if (currentCategory == category) {
+          if (category != '전체') {
+            ref.read(categoryFilterProvider.notifier).setCategory('전체');
+          }
+        } else {
+          ref.read(categoryFilterProvider.notifier).setCategory(category);
+        }
+      }
+    }
+
+    List<Widget> buildChips() {
+      return List.generate(categoryChips.length, (int index) {
+        final category = categoryChips[index];
+        final isSelected = currentCategory == category;
+        final categoryColor = AppColors.getCategoryColor(category);
+
+        return Padding(
+          padding: EdgeInsets.only(
+            right: isScrollable ? AppSpacing.s : 0,
+          ),
+          child: _IOSStyleChip(
+            label: category,
+            isSelected: isSelected,
+            color: categoryColor,
+            onTap: () => onCategoryTap(category),
+          ),
+        );
+      });
+    }
+
+    if (isScrollable) {
+      return SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        child: Row(
+          children: buildChips(),
+        ),
+      );
+    } else {
+      return Wrap(
+        spacing: AppSpacing.s,
+        runSpacing: AppSpacing.s,
+        children: buildChips(),
+      );
+    }
   }
 }
 
@@ -115,12 +128,16 @@ class _IOSStyleChip extends ConsumerWidget {
           vertical: 8,
         ),
         decoration: BoxDecoration(
-          color: isSelected ? color : Colors.transparent,
+          color: isSelected
+              ? color
+              : isDark
+              ? AppColors.surfaceElevatedDark
+              : AppColors.surfaceElevated,
           borderRadius: BorderRadius.circular(AppSpacing.radiusXl),
-          border: Border.all(
-            color: isSelected ? color : AppColors.divider,
-            width: isSelected ? 0 : 0.5,
-          ),
+          // border: Border.all(
+          //   color: isSelected ? color : AppColors.divider,
+          //   width: isSelected ? 0 : 0.5,
+          // ),
           // iOS 스타일 그림자 (선택시)
           boxShadow: isSelected
               ? [

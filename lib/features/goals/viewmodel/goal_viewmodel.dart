@@ -13,7 +13,6 @@ part 'goal_viewmodel.g.dart';
 @riverpod
 class GoalViewModel extends _$GoalViewModel {
   late GoalRepository _repository;
-  String _category = '일상';
   bool isStatsScreen = false;
 
   @override
@@ -30,7 +29,7 @@ class GoalViewModel extends _$GoalViewModel {
     return updatedGoals;
   }
 
-  Future<void> addGoal(String title) async {
+  Future<void> addGoal(String title, String category) async {
     state = const AsyncValue.loading();
 
     try {
@@ -42,7 +41,7 @@ class GoalViewModel extends _$GoalViewModel {
         isOngoing: true,
         sortOrder: 0,
         createdAt: now,
-        category: _category,
+        category: category,
       );
 
       final updated = [
@@ -220,11 +219,6 @@ class GoalViewModel extends _$GoalViewModel {
     final ongoingGoals = goals.where((g) => g.isOngoing == isOngoing).toList();
 
     return ongoingGoals;
-  }
-
-  String updateCategory(String category) {
-    _category = category;
-    return _category;
   }
 
   Future<void> toggleIsOngoing(Goal currentGoal, bool isRetry) async {

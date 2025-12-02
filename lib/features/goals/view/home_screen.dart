@@ -54,7 +54,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
               SizedBox(width: AppSpacing.s),
             ],
             bottom: PreferredSize(
-              preferredSize: const Size.fromHeight(70),
+              preferredSize: const Size.fromHeight(55),
               child: Container(
                 height: 48,
                 margin: const EdgeInsets.symmetric(

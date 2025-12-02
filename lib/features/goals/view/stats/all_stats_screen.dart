@@ -249,7 +249,7 @@ class AllStatsScreen extends ConsumerWidget {
 
               // Goal Breakdown
               Text(
-                '목표별 누적 현황',
+                '루틴별 누적 현황',
                 style: Font.main.copyWith(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,

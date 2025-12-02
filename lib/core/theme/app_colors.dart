@@ -91,7 +91,7 @@ class AppColors {
   static const shadowMedium = Color(0x33000000); // 20% 불투명도
   static const shadowDark = Color(0x4D000000); // 30% 불투명도
 
-  static Color getCategoryColor(String category) {
+static Color getCategoryColor(String category) {
     return categoryColors[category] ?? primary;
   }
 }

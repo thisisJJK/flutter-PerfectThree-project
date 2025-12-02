@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:perfect_three/shared/ads/banner_ad_widget.dart';
 import 'package:perfect_three/features/goals/viewmodel/goal_viewmodel.dart';
 import 'package:perfect_three/features/goals/widgets/category_chips.dart';
+import 'package:perfect_three/shared/ads/banner_ad_widget.dart';
 
 class AddGoalScreen extends ConsumerStatefulWidget {
   const AddGoalScreen({super.key});
@@ -14,6 +14,7 @@ class AddGoalScreen extends ConsumerStatefulWidget {
 
 class _AddGoalScreenState extends ConsumerState<AddGoalScreen> {
   final _textController = TextEditingController();
+  String _selectedCategory = '일상';
 
   @override
   void dispose() {
@@ -24,7 +25,9 @@ class _AddGoalScreenState extends ConsumerState<AddGoalScreen> {
   void _saveGoal() {
     if (_textController.text.isEmpty) return;
 
-    ref.read(goalViewModelProvider.notifier).addGoal(_textController.text);
+    ref
+        .read(goalViewModelProvider.notifier)
+        .addGoal(_textController.text, _selectedCategory);
     context.pop();
   }
 
@@ -33,7 +36,10 @@ class _AddGoalScreenState extends ConsumerState<AddGoalScreen> {
     return Scaffold(
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
-        title: const Text("습관 만들기"),
+        title: const Text(
+          "루틴 만들기",
+          style: TextStyle(fontSize: 20),
+        ),
       ),
       body: Padding(
         padding: const EdgeInsets.all(24.0),
@@ -44,7 +50,17 @@ class _AddGoalScreenState extends ConsumerState<AddGoalScreen> {
             const Text("어떤 습관을 만들고 싶나요?", style: TextStyle(fontSize: 20)),
             const SizedBox(height: 16),
             //카테고리
-            CategoryChips(isOngoing: false),
+            CategoryChips(
+              isOngoing: false,
+              isScrollable: false,
+              showAllOption: false,
+              selectedCategory: _selectedCategory,
+              onSelected: (category) {
+                setState(() {
+                  _selectedCategory = category;
+                });
+              },
+            ),
 
             const SizedBox(height: 16),
             TextField(

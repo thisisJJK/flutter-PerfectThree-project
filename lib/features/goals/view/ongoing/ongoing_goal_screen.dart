@@ -31,21 +31,6 @@ class OngoingGoalScreen extends ConsumerWidget {
               : allOngoingGoals
                     .where((g) => g.category == selectedCategory)
                     .toList();
-          if (ongoingGoals.isEmpty) {
-            return Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(Icons.flag_outlined, size: 66),
-                  const SizedBox(height: 16),
-                  Text(
-                    "아직 목표가 없어요.\n새로운 3일 도전을 시작해보세요!",
-                    textAlign: TextAlign.center,
-                  ),
-                ],
-              ),
-            );
-          }
           // 목표 리스트 렌더링 - 카테고리 칩 포함
           return Column(
             children: [
@@ -58,41 +43,66 @@ class OngoingGoalScreen extends ConsumerWidget {
                 ),
                 child: CategoryChips(isOngoing: true),
               ),
-              // 목표 리스트
+              // 목표 리스트 또는 빈 상태
               Expanded(
-                child: ReorderableListView.builder(
-                  padding: const EdgeInsets.only(bottom: 80),
-                  onReorder: (oldIndex, newIndex) {
-                    ref
-                        .read(goalViewModelProvider.notifier)
-                        .reorder(oldIndex, newIndex, ongoingGoals);
-                  },
-                  proxyDecorator: (child, index, animation) {
-                    return AnimatedBuilder(
-                      animation: animation,
-                      builder: (BuildContext context, Widget? child) {
-                        final double animValue = Curves.easeInOut.transform(
-                          animation.value,
-                        );
-                        final double scale = lerpDouble(1, 1.03, animValue)!;
-                        return Transform.scale(
-                          scale: scale,
-                          child: GoalCard(
-                            goal: ongoingGoals[index],
-                          ),
-                        );
-                      },
-                    );
-                  },
-                  itemCount: ongoingGoals.length,
-                  itemBuilder: (context, index) {
-                    final goal = ongoingGoals[index];
-                    return GoalCard(
-                      goal: goal,
-                      key: ValueKey(ongoingGoals[index].id),
-                    );
-                  },
-                ),
+                child: ongoingGoals.isEmpty
+                    ? Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(Icons.flag_outlined, size: 66),
+                            const SizedBox(height: 16),
+                            Text(
+                              "아직 목표가 없어요.\n새로운 3일 도전을 시작해보세요!",
+                              textAlign: TextAlign.center,
+                            ),
+                          ],
+                        ),
+                      )
+                    : ReorderableListView.builder(
+                        padding: const EdgeInsets.only(bottom: 80),
+                        onReorder: (oldIndex, newIndex) {
+                          ref
+                              .read(goalViewModelProvider.notifier)
+                              .reorder(oldIndex, newIndex, ongoingGoals);
+                        },
+                        proxyDecorator: (child, index, animation) {
+                          return AnimatedBuilder(
+                            animation: animation,
+                            builder: (BuildContext context, Widget? child) {
+                              final double animValue = Curves.easeInOut
+                                  .transform(
+                                    animation.value,
+                                  );
+                              final double scale = lerpDouble(
+                                1,
+                                1.03,
+                                animValue,
+                              )!;
+                              return Transform.scale(
+                                scale: scale,
+                                child: Material(
+                                  color: Colors.transparent,
+                                  child: SizedBox(
+                                    width: MediaQuery.of(context).size.width,
+                                    child: GoalCard(
+                                      goal: ongoingGoals[index],
+                                    ),
+                                  ),
+                                ),
+                              );
+                            },
+                          );
+                        },
+                        itemCount: ongoingGoals.length,
+                        itemBuilder: (context, index) {
+                          final goal = ongoingGoals[index];
+                          return GoalCard(
+                            goal: goal,
+                            key: ValueKey(ongoingGoals[index].id),
+                          );
+                        },
+                      ),
               ),
             ],
           );
