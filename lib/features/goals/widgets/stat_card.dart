@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:perfect_three/core/theme/app_colors.dart';
+import 'package:perfect_three/core/theme/app_spacing.dart';
+import 'package:perfect_three/core/theme/app_theme.dart';
 
+/// iOS 위젯 스타일 통계 카드
 class StatCard extends StatelessWidget {
   final String label;
   final String value;
@@ -23,56 +26,93 @@ class StatCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final effectiveColor = color ?? AppColors.primary;
     final effectiveDarkColor = color ?? AppColors.primaryDark;
+    final displayColor = isDark ? effectiveDarkColor : effectiveColor;
 
-    return Card(
-      elevation: 2,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
+    return Container(
+      decoration: BoxDecoration(
+        color: isDark ? AppColors.surfaceDark : AppColors.surface,
+        borderRadius: BorderRadius.circular(AppSpacing.radiusL),
+        border: Border.all(
+          color: (isDark ? AppColors.dividerDark : AppColors.divider)
+              .withValues(alpha: 0.3),
+          width: 0.5, // iOS 스타일 얇은 테두리
+        ),
+        // iOS 스타일 부드러운 그림자
+        boxShadow: [
+          BoxShadow(
+            color: isDark
+                ? Colors.black.withValues(alpha: 0.3)
+                : Colors.black.withValues(alpha: 0.06),
+            blurRadius: 10,
+            offset: const Offset(0, 2),
+          ),
+        ],
       ),
       child: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(AppSpacing.m),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
           children: [
+            // 아이콘과 라벨
             Row(
               children: [
-                Icon(
-                  icon,
-                  size: 20,
-                  color: isDark
-                      ? effectiveDarkColor.withOpacity(0.7)
-                      : effectiveColor.withOpacity(0.7),
+                // iOS 스타일 아이콘 배경
+                Container(
+                  padding: const EdgeInsets.all(AppSpacing.s),
+                  decoration: BoxDecoration(
+                    color: displayColor.withValues(alpha: 0.15),
+                    borderRadius: BorderRadius.circular(AppSpacing.radiusS),
+                  ),
+                  child: Icon(
+                    icon,
+                    size: 20, // 약간 더 큰 아이콘
+                    color: displayColor,
+                  ),
                 ),
-                const SizedBox(width: 8),
+                const SizedBox(width: AppSpacing.s),
                 Expanded(
                   child: Text(
                     label,
-                    style: TextStyle(
-                      fontSize: 12,
-
-                      fontWeight: FontWeight.w500,
+                    style: Font.main.copyWith(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
+                      color: isDark
+                          ? AppColors.textSecondaryDark
+                          : AppColors.textSecondary,
+                      letterSpacing: -0.2,
                     ),
                   ),
                 ),
               ],
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: AppSpacing.m),
+
+            // 값 (큰 숫자)
             Text(
               value,
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-                color: isDark ? effectiveDarkColor : effectiveColor,
+              style: Font.display.copyWith(
+                fontSize: 28, // iOS 스타일 큰 숫자
+                fontWeight: FontWeight.w700,
+                color: isDark
+                    ? AppColors.textPrimaryDark
+                    : AppColors.textPrimary,
+                letterSpacing: -0.5,
               ),
             ),
+
+            // 부제목 (선택사항)
             if (subtitle != null) ...[
-              const SizedBox(height: 4),
+              const SizedBox(height: AppSpacing.xs),
               Text(
                 subtitle!,
-                style: TextStyle(
-                  fontSize: 11,
-                  color: Colors.grey.shade500,
+                style: Font.main.copyWith(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w500,
+                  color: isDark
+                      ? AppColors.textTertiaryDark
+                      : AppColors.textTertiary,
+                  letterSpacing: -0.1,
                 ),
               ),
             ],

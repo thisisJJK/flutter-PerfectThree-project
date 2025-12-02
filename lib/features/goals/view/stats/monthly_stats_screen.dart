@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:perfect_three/core/theme/app_colors.dart';
 import 'package:perfect_three/core/theme/app_spacing.dart';
+import 'package:perfect_three/core/theme/app_theme.dart';
 import 'package:perfect_three/core/theme/provider/theme_provider.dart';
 import 'package:perfect_three/features/goals/viewmodel/goal_viewmodel.dart';
 import 'package:perfect_three/features/goals/widgets/stat_card.dart';
@@ -70,27 +71,46 @@ class _MonthlyStatsScreenState extends ConsumerState<MonthlyStatsScreen> {
   @override
   Widget build(BuildContext context) {
     final goalsAsync = ref.watch(goalViewModelProvider);
+    final themeMode = ref.watch(themeModeNotifierProvider).value;
+    final isDark = themeMode == ThemeMode.dark;
 
     return Scaffold(
       body: Column(
         children: [
           // Month Selector
           Padding(
-            padding: const EdgeInsets.all(16.0),
+            padding: const EdgeInsets.all(AppSpacing.m),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 IconButton(
                   onPressed: () => _changeMonth(-1),
-                  icon: const Icon(Icons.chevron_left),
+                  icon: Icon(
+                    Icons.chevron_left_rounded,
+                    color: isDark
+                        ? AppColors.textPrimaryDark
+                        : AppColors.textPrimary,
+                  ),
                 ),
                 Text(
                   DateFormat('yyyy년 MM월').format(_selectedMonth),
-                  style: Theme.of(context).textTheme.titleLarge,
+                  style: Font.display.copyWith(
+                    fontSize: 22,
+                    fontWeight: FontWeight.w700,
+                    color: isDark
+                        ? AppColors.textPrimaryDark
+                        : AppColors.textPrimary,
+                    letterSpacing: -0.4,
+                  ),
                 ),
                 IconButton(
                   onPressed: () => _changeMonth(1),
-                  icon: const Icon(Icons.chevron_right),
+                  icon: Icon(
+                    Icons.chevron_right_rounded,
+                    color: isDark
+                        ? AppColors.textPrimaryDark
+                        : AppColors.textPrimary,
+                  ),
                 ),
               ],
             ),
@@ -145,170 +165,215 @@ class _MonthlyStatsScreenState extends ConsumerState<MonthlyStatsScreen> {
                 }
 
                 if (totalSuccesses == 0) {
-                  return const Center(child: Text('이 달의 달성 기록이 없습니다.'));
+                  return Center(
+                    child: Padding(
+                      padding: const EdgeInsets.all(AppSpacing.xl),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.calendar_today_outlined,
+                            size: 64,
+                            color: isDark
+                                ? AppColors.textTertiaryDark
+                                : AppColors.textTertiary,
+                          ),
+                          const SizedBox(height: AppSpacing.m),
+                          Text(
+                            '이 달의 달성 기록이 없습니다.',
+                            style: Font.main.copyWith(
+                              color: isDark
+                                  ? AppColors.textSecondaryDark
+                                  : AppColors.textSecondary,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w500,
+                              letterSpacing: -0.2,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
                 }
 
                 // Calculate derived stats
-                final daysInMonth = DateTime(
-                  _selectedMonth.year,
-                  _selectedMonth.month + 1,
-                  0,
-                ).day;
-                final now = DateUtils.now();
-                final daysElapsed =
-                    _selectedMonth.month == now.month &&
-                        _selectedMonth.year == now.year
-                    ? now.day
-                    : daysInMonth;
-
                 final activeGoalsCount = activeGoals.length;
-                final possibleChecks = daysElapsed * activeGoalsCount * 3;
-                final successRate = possibleChecks > 0
-                    ? (totalSuccesses / possibleChecks * 100)
-                    : 0.0;
-                final dailyAverage = daysElapsed > 0
-                    ? (totalSuccesses / daysElapsed)
-                    : 0.0;
                 final bestStreak = _calculateBestStreak(allSuccessDates);
                 final monthDiff = totalSuccesses - prevMonthSuccesses;
                 final weeklyBreakdown = _getWeeklyBreakdown(allSuccessDates);
 
                 return ListView(
-                  padding: const EdgeInsets.fromLTRB(16, 0, 16, 88),
+                  padding: const EdgeInsets.fromLTRB(
+                    AppSpacing.screenPadding,
+                    0,
+                    AppSpacing.screenPadding,
+                    88,
+                  ),
                   children: [
-                    const Text(
+                    Text(
                       '월간 분석',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
+                      style: Font.display.copyWith(
+                        fontSize: 20,
+                        fontWeight: FontWeight.w700,
+                        letterSpacing: -0.3,
                       ),
                     ),
+                    const SizedBox(height: AppSpacing.m),
                     // Stats Grid
                     GridView.count(
                       crossAxisCount: 2,
                       shrinkWrap: true,
                       physics: const NeverScrollableScrollPhysics(),
-                      mainAxisSpacing: 4,
-                      crossAxisSpacing: 4,
-                      childAspectRatio: 1.5,
+                      mainAxisSpacing: AppSpacing.s,
+                      crossAxisSpacing: AppSpacing.s,
+                      childAspectRatio: 1.3,
                       children: [
                         StatCard(
                           label: '총 성공',
                           value: '$totalSuccesses회',
-                          icon: Icons.check_circle,
-                          color: Colors.green,
-                          isDark: true,
+                          icon: Icons.check_circle_outline_rounded,
+                          color: AppColors.success,
+                          isDark: isDark,
                         ),
-                        // StatCard(
-                        //   label: '성공률',
-                        //   value: '${successRate.toStringAsFixed(1)}%',
-                        //   icon: Icons.percent,
-                        //   subtitle: '$possibleChecks회 중',
-                        // ),
-                        // StatCard(
-                        //   label: '일평균',
-                        //   value: dailyAverage.toStringAsFixed(1),
-                        //   icon: Icons.calendar_today,
-                        //   subtitle: '회/일',
-                        // ),
                         StatCard(
                           label: '최고 연속',
                           value: '$bestStreak일',
-                          icon: Icons.local_fire_department,
-                          color: Colors.redAccent,
-                          isDark: true,
+                          icon: Icons.local_fire_department_rounded,
+                          color: AppColors.error,
+                          isDark: isDark,
                         ),
                         StatCard(
                           label: '활성 목표',
                           value: '$activeGoalsCount개',
-                          icon: Icons.flag,
-                          color: Colors.blue,
-                          isDark: true,
+                          icon: Icons.flag_outlined,
+                          color: AppColors.info,
+                          isDark: isDark,
                         ),
                         StatCard(
                           label: '전월 대비',
                           value: monthDiff >= 0 ? '+$monthDiff' : '$monthDiff',
                           icon: monthDiff >= 0
-                              ? Icons.trending_up
-                              : Icons.trending_down,
-                          color: monthDiff >= 0 ? Colors.green : Colors.orange,
-                          isDark: true,
-                          // subtitle: '회',
+                              ? Icons.trending_up_rounded
+                              : Icons.trending_down_rounded,
+                          color: monthDiff >= 0
+                              ? AppColors.success
+                              : AppColors.warning,
+                          isDark: isDark,
                         ),
                       ],
                     ),
-                    const SizedBox(height: 24),
+                    const SizedBox(height: AppSpacing.xl),
 
                     // Weekly Breakdown Chart
-                    const Text(
+                    Text(
                       '주간 분석',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
+                      style: Font.display.copyWith(
+                        fontSize: 20,
+                        fontWeight: FontWeight.w700,
+                        letterSpacing: -0.3,
                       ),
                     ),
-                    const SizedBox(height: 16),
-                    _buildWeeklyChart(context, weeklyBreakdown),
-                    const SizedBox(height: 24),
+                    const SizedBox(height: AppSpacing.m),
+                    _buildWeeklyChart(context, weeklyBreakdown, isDark),
+                    const SizedBox(height: AppSpacing.xl),
 
                     // Goal Breakdown
-                    const Text(
+                    Text(
                       '목표별 달성 현황',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
+                      style: Font.display.copyWith(
+                        fontSize: 20,
+                        fontWeight: FontWeight.w700,
+                        letterSpacing: -0.3,
                       ),
                     ),
-                    const SizedBox(height: 16),
+                    const SizedBox(height: AppSpacing.m),
                     ...goalSuccessCounts.entries.map((entry) {
                       final goal = goals.firstWhere(
                         (g) => g.title == entry.key,
                       );
-                      final colorScheme = Theme.of(context).colorScheme;
-                      final themeMode = ref
-                          .watch(themeModeNotifierProvider)
-                          .value;
-                      final isDark = themeMode == ThemeMode.dark;
-                      final color = isDark
-                          ? colorScheme.tertiary.withValues(alpha: 0.8)
-                          : Colors.deepPurple.shade400;
-                      return Card(
-                        margin: const EdgeInsets.only(bottom: 8),
+                      final categoryColor = AppColors.getCategoryColor(
+                        goal.category,
+                      );
+
+                      return Container(
+                        margin: const EdgeInsets.only(bottom: AppSpacing.s),
+                        decoration: BoxDecoration(
+                          color: isDark
+                              ? AppColors.surfaceDark
+                              : AppColors.surface,
+                          borderRadius: BorderRadius.circular(
+                            AppSpacing.radius,
+                          ),
+                          border: Border.all(
+                            color:
+                                (isDark
+                                        ? AppColors.dividerDark
+                                        : AppColors.divider)
+                                    .withValues(alpha: 0.3),
+                            width: 0.5,
+                          ),
+                          // iOS 스타일 그림자
+                          boxShadow: [
+                            BoxShadow(
+                              color: isDark
+                                  ? Colors.black.withValues(alpha: 0.2)
+                                  : Colors.black.withValues(alpha: 0.04),
+                              blurRadius: 8,
+                              offset: const Offset(0, 2),
+                            ),
+                          ],
+                        ),
                         child: ListTile(
+                          contentPadding: EdgeInsets.symmetric(
+                            horizontal: AppSpacing.m,
+                            vertical: AppSpacing.xs,
+                          ),
                           leading: Container(
                             padding: const EdgeInsets.symmetric(
-                              horizontal: AppSpacing.sm,
+                              horizontal: AppSpacing.s,
                               vertical: AppSpacing.xs,
                             ),
                             decoration: BoxDecoration(
-                              color: isDark
-                                  ? AppColors.getCategoryColor(
-                                      goal.category,
-                                    ).withValues(alpha: 0.3)
-                                  : AppColors.getCategoryColor(
-                                      goal.category,
-                                    ).withValues(alpha: 0.2),
+                              color: categoryColor.withValues(alpha: 0.15),
                               borderRadius: BorderRadius.circular(
-                                AppSpacing.radius,
+                                AppSpacing.radiusS,
                               ),
                             ),
-                            child: Text(goal.category),
+                            child: Text(
+                              goal.category,
+                              style: Font.main.copyWith(
+                                color: categoryColor,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 12,
+                              ),
+                            ),
                           ),
-                          title: Text(entry.key),
+                          title: Text(
+                            entry.key,
+                            style: Font.main.copyWith(
+                              fontWeight: FontWeight.w600,
+                              letterSpacing: -0.2,
+                            ),
+                          ),
                           trailing: Container(
                             padding: const EdgeInsets.symmetric(
                               horizontal: 12,
                               vertical: 6,
                             ),
                             decoration: BoxDecoration(
-                              color: color.withOpacity(0.2),
+                              color: isDark
+                                  ? AppColors.primaryDark.withValues(alpha: 0.1)
+                                  : AppColors.primary.withValues(alpha: 0.1),
                               borderRadius: BorderRadius.circular(12),
                             ),
                             child: Text(
                               '${entry.value}회',
-                              style: TextStyle(
-                                color: color,
-                                fontWeight: FontWeight.bold,
+                              style: Font.main.copyWith(
+                                color: isDark
+                                    ? AppColors.primaryDark
+                                    : AppColors.primary,
+                                fontWeight: FontWeight.w700,
+                                letterSpacing: -0.2,
                               ),
                             ),
                           ),
@@ -327,7 +392,11 @@ class _MonthlyStatsScreenState extends ConsumerState<MonthlyStatsScreen> {
     );
   }
 
-  Widget _buildWeeklyChart(BuildContext context, Map<int, int> weekCounts) {
+  Widget _buildWeeklyChart(
+    BuildContext context,
+    Map<int, int> weekCounts,
+    bool isDark,
+  ) {
     if (weekCounts.isEmpty) {
       return const SizedBox.shrink();
     }
@@ -336,8 +405,16 @@ class _MonthlyStatsScreenState extends ConsumerState<MonthlyStatsScreen> {
     final weeks = ['1주차', '2주차', '3주차', '4주차', '5주차'];
 
     return Card(
+      elevation: 0,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(AppSpacing.radiusL),
+        side: BorderSide(
+          color: isDark ? AppColors.dividerDark : AppColors.divider,
+          width: 1,
+        ),
+      ),
       child: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(AppSpacing.m),
         child: Column(
           children: [
             Row(
@@ -354,17 +431,23 @@ class _MonthlyStatsScreenState extends ConsumerState<MonthlyStatsScreen> {
                       children: [
                         Text(
                           '$count',
-                          style: TextStyle(
+                          style: Font.main.copyWith(
                             fontSize: 12,
                             fontWeight: FontWeight.bold,
-                            color: AppColors.primary,
+                            color: isDark
+                                ? AppColors.primaryDark
+                                : AppColors.primary,
                           ),
                         ),
                         const SizedBox(height: 4),
                         Container(
                           height: height.clamp(20, 100),
                           decoration: BoxDecoration(
-                            color: AppColors.primary.withValues(alpha: 0.4),
+                            color:
+                                (isDark
+                                        ? AppColors.primaryDark
+                                        : AppColors.primary)
+                                    .withValues(alpha: 0.4),
                             borderRadius: const BorderRadius.vertical(
                               top: Radius.circular(4),
                             ),
@@ -373,7 +456,12 @@ class _MonthlyStatsScreenState extends ConsumerState<MonthlyStatsScreen> {
                         const SizedBox(height: 8),
                         Text(
                           weeks[index],
-                          style: const TextStyle(fontSize: 11),
+                          style: Font.main.copyWith(
+                            fontSize: 11,
+                            color: isDark
+                                ? AppColors.textSecondaryDark
+                                : AppColors.textSecondary,
+                          ),
                         ),
                       ],
                     ),

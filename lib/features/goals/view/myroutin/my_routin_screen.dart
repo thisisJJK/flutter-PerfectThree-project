@@ -2,7 +2,9 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:perfect_three/core/theme/app_spacing.dart';
 import 'package:perfect_three/features/goals/viewmodel/goal_viewmodel.dart';
+import 'package:perfect_three/features/goals/widgets/category_chips.dart';
 import 'package:perfect_three/features/goals/widgets/my_routin_card.dart';
 
 class MyRoutinScreen extends ConsumerWidget {
@@ -41,40 +43,54 @@ class MyRoutinScreen extends ConsumerWidget {
               ),
             );
           } else {
-            // 목표 리스트 렌더링
-            return ReorderableListView.builder(
-              padding: const EdgeInsets.only(bottom: 80), // FAB와 겹치지 않게 여백
-              onReorder: (oldIndex, newIndex) {
-                ref
-                    .read(goalViewModelProvider.notifier)
-                    .reorder(oldIndex, newIndex, ongoingFalseGoals);
-              },
-              proxyDecorator: (child, index, animation) {
-                return AnimatedBuilder(
-                  animation: animation,
-                  builder: (BuildContext context, Widget? child) {
-                    final double animValue = Curves.easeInOut.transform(
-                      animation.value,
-                    );
-                    final double elevation = lerpDouble(1, 6, animValue)!;
-                    final double scale = lerpDouble(1, 1.03, animValue)!;
-                    return Transform.scale(
-                      scale: scale,
-                      child: MyRoutinCard(
+            // 목표 리스트 렌더링 - 카테고리 칩 포함
+            return Column(
+              children: [
+                // 카테고리 칩
+                Padding(
+                  padding: const EdgeInsets.only(
+                    left: AppSpacing.screenPadding,
+                    top: AppSpacing.m,
+                    bottom: AppSpacing.s,
+                  ),
+                  child: CategoryChips(isOngoing: false),
+                ),
+                // 목표 리스트
+                Expanded(
+                  child: ReorderableListView.builder(
+                    padding: const EdgeInsets.only(bottom: 80),
+                    onReorder: (oldIndex, newIndex) {
+                      ref
+                          .read(goalViewModelProvider.notifier)
+                          .reorder(oldIndex, newIndex, ongoingFalseGoals);
+                    },
+                    proxyDecorator: (child, index, animation) {
+                      return AnimatedBuilder(
+                        animation: animation,
+                        builder: (BuildContext context, Widget? child) {
+                          final double animValue = Curves.easeInOut.transform(
+                            animation.value,
+                          );
+                          final double scale = lerpDouble(1, 1.03, animValue)!;
+                          return Transform.scale(
+                            scale: scale,
+                            child: MyRoutinCard(
+                              goal: ongoingFalseGoals[index],
+                            ),
+                          );
+                        },
+                      );
+                    },
+                    itemCount: ongoingFalseGoals.length,
+                    itemBuilder: (context, index) {
+                      return MyRoutinCard(
                         goal: ongoingFalseGoals[index],
-                        elevation: elevation,
-                      ),
-                    );
-                  },
-                );
-              },
-              itemCount: ongoingFalseGoals.length,
-              itemBuilder: (context, index) {
-                return MyRoutinCard(
-                  goal: ongoingFalseGoals[index],
-                  key: ValueKey(ongoingFalseGoals[index].id),
-                );
-              },
+                        key: ValueKey(ongoingFalseGoals[index].id),
+                      );
+                    },
+                  ),
+                ),
+              ],
             );
           }
         },

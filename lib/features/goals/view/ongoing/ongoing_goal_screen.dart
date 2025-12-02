@@ -3,7 +3,10 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:perfect_three/core/theme/app_colors.dart';
+import 'package:perfect_three/core/theme/app_spacing.dart';
 import 'package:perfect_three/features/goals/viewmodel/goal_viewmodel.dart';
+import 'package:perfect_three/features/goals/widgets/category_chips.dart';
 import 'package:perfect_three/features/goals/widgets/goal_card.dart';
 
 class OngoingGoalScreen extends ConsumerWidget {
@@ -43,50 +46,93 @@ class OngoingGoalScreen extends ConsumerWidget {
               ),
             );
           }
-          // 목표 리스트 렌더링
-          return ReorderableListView.builder(
-            padding: const EdgeInsets.only(bottom: 80), // FAB와 겹치지 않게 여백
-            onReorder: (oldIndex, newIndex) {
-              ref
-                  .read(goalViewModelProvider.notifier)
-                  .reorder(oldIndex, newIndex, ongoingGoals);
-            },
-            proxyDecorator: (child, index, animation) {
-              return AnimatedBuilder(
-                animation: animation,
-                builder: (BuildContext context, Widget? child) {
-                  final double animValue = Curves.easeInOut.transform(
-                    animation.value,
-                  );
-                  final double elevation = lerpDouble(1, 6, animValue)!;
-                  final double scale = lerpDouble(1, 1.03, animValue)!;
-                  return Transform.scale(
-                    scale: scale,
-                    child: GoalCard(
-                      goal: ongoingGoals[index],
-                      elevation: elevation,
-                    ),
-                  );
-                },
-              );
-            },
-            itemCount: ongoingGoals.length,
-            itemBuilder: (context, index) {
-              final goal = ongoingGoals[index];
-              return GoalCard(
-                goal: goal,
-                key: ValueKey(ongoingGoals[index].id),
-              );
-            },
+          // 목표 리스트 렌더링 - 카테고리 칩 포함
+          return Column(
+            children: [
+              // 카테고리 칩
+              Padding(
+                padding: const EdgeInsets.only(
+                  left: AppSpacing.screenPadding,
+                  top: AppSpacing.m,
+                  bottom: AppSpacing.s,
+                ),
+                child: CategoryChips(isOngoing: true),
+              ),
+              // 목표 리스트
+              Expanded(
+                child: ReorderableListView.builder(
+                  padding: const EdgeInsets.only(bottom: 80),
+                  onReorder: (oldIndex, newIndex) {
+                    ref
+                        .read(goalViewModelProvider.notifier)
+                        .reorder(oldIndex, newIndex, ongoingGoals);
+                  },
+                  proxyDecorator: (child, index, animation) {
+                    return AnimatedBuilder(
+                      animation: animation,
+                      builder: (BuildContext context, Widget? child) {
+                        final double animValue = Curves.easeInOut.transform(
+                          animation.value,
+                        );
+                        final double scale = lerpDouble(1, 1.03, animValue)!;
+                        return Transform.scale(
+                          scale: scale,
+                          child: GoalCard(
+                            goal: ongoingGoals[index],
+                          ),
+                        );
+                      },
+                    );
+                  },
+                  itemCount: ongoingGoals.length,
+                  itemBuilder: (context, index) {
+                    final goal = ongoingGoals[index];
+                    return GoalCard(
+                      goal: goal,
+                      key: ValueKey(ongoingGoals[index].id),
+                    );
+                  },
+                ),
+              ),
+            ],
           );
         },
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          context.push('/add'); // 라우터로 이동
-        },
-
-        child: const Icon(Icons.add),
+      floatingActionButton: Container(
+        width: 64,
+        height: 64,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [
+              AppColors.primary,
+              AppColors.primary.withValues(alpha: 0.8),
+            ],
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: AppColors.primary.withValues(alpha: 0.4),
+              blurRadius: 16,
+              offset: const Offset(0, 6),
+            ),
+          ],
+        ),
+        child: Material(
+          color: Colors.transparent,
+          child: InkWell(
+            onTap: () {
+              context.push('/add');
+            },
+            customBorder: const CircleBorder(),
+            child: const Icon(
+              Icons.add_rounded,
+              color: Colors.white,
+              size: 32,
+            ),
+          ),
+        ),
       ),
     );
   }

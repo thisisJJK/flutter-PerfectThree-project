@@ -2,8 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:perfect_three/core/theme/app_colors.dart';
 import 'package:perfect_three/core/theme/app_spacing.dart';
+import 'package:perfect_three/core/theme/app_theme.dart';
+import 'package:perfect_three/core/theme/provider/theme_provider.dart';
 import 'package:perfect_three/features/goals/viewmodel/goal_viewmodel.dart';
 
+/// iOS 세그먼트 컨트롤 스타일 카테고리 칩
 class CategoryChips extends ConsumerStatefulWidget {
   final bool isOngoing;
 
@@ -14,11 +17,6 @@ class CategoryChips extends ConsumerStatefulWidget {
 }
 
 class CategoryChipsState extends ConsumerState<CategoryChips> {
-  @override
-  void initState() {
-    super.initState();
-  }
-
   List<String> categoryChips = [
     '전체',
     '일상',
@@ -34,77 +32,120 @@ class CategoryChipsState extends ConsumerState<CategoryChips> {
 
   @override
   Widget build(BuildContext context) {
-    // int? value = 0; //여기 넣으면 왜 안되는지?
-
     return widget.isOngoing
         ? SingleChildScrollView(
-            //진행중 화면
             scrollDirection: Axis.horizontal,
             child: Row(
               children: List.generate(categoryChips.length, (int index) {
-                return Row(
-                  children: [
-                    ChoiceChip(
-                      padding: EdgeInsets.all(AppSpacing.sm),
-                      showCheckmark: false,
-                      label: Text(
-                        categoryChips[index],
-                        style: TextStyle(
-                          color: value == index
-                              ? Colors.white
-                              : AppColors.getCategoryColor(
-                                  categoryChips[index],
-                                ),
-                          fontWeight: value == index
-                              ? FontWeight.bold
-                              : FontWeight.normal,
-                        ),
-                      ),
-                      selected: value == index,
-                      selectedColor: AppColors.getCategoryColor(
-                        categoryChips[index],
-                      ),
-                      backgroundColor: AppColors.getCategoryColor(
-                        categoryChips[index],
-                      ).withValues(alpha: 0.1),
-                      side: BorderSide.none,
-                      onSelected: (bool selected) {
-                        setState(() {
-                          value = index;
+                final isSelected = value == index;
+                final category = categoryChips[index];
+                final categoryColor = AppColors.getCategoryColor(category);
 
-                          //카테고리별 필터
-                          ref
-                              .read(categoryFilterProvider.notifier)
-                              .setCategory(categoryChips[index]);
-                        });
-                      },
-                    ),
-                    SizedBox(width: AppSpacing.sm),
-                  ],
+                return Padding(
+                  padding: EdgeInsets.only(right: AppSpacing.s),
+                  child: _IOSStyleChip(
+                    label: category,
+                    isSelected: isSelected,
+                    color: categoryColor,
+                    onTap: () {
+                      setState(() {
+                        value = index;
+                        ref
+                            .read(categoryFilterProvider.notifier)
+                            .setCategory(category);
+                      });
+                    },
+                  ),
                 );
               }).toList(),
             ),
           )
         : Wrap(
-            //추가 화면
-            spacing: 5,
+            spacing: AppSpacing.s,
+            runSpacing: AppSpacing.s,
             children: List.generate(categoryChips.length - 1, (int index) {
-              return ChoiceChip(
-                padding: EdgeInsets.all(8),
-                showCheckmark: false,
-                label: Text(categoryChips[index + 1]),
-                selected: value == index,
-                onSelected: (bool selected) {
+              final category = categoryChips[index + 1];
+              final isSelected = value == index;
+              final categoryColor = AppColors.getCategoryColor(category);
+
+              return _IOSStyleChip(
+                label: category,
+                isSelected: isSelected,
+                color: categoryColor,
+                onTap: () {
                   setState(() {
                     value = index;
-                    //습관 카테고리 저장
                     ref
                         .read(goalViewModelProvider.notifier)
-                        .updateCategory(categoryChips[index + 1]);
+                        .updateCategory(category);
                   });
                 },
               );
             }).toList(),
           );
+  }
+}
+
+/// iOS 스타일 칩 위젯
+class _IOSStyleChip extends ConsumerWidget {
+  final String label;
+  final bool isSelected;
+  final Color color;
+  final VoidCallback onTap;
+
+  const _IOSStyleChip({
+    required this.label,
+    required this.isSelected,
+    required this.color,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final themeMode = ref.watch(themeModeNotifierProvider).value;
+    final isDark = themeMode == ThemeMode.dark;
+
+    return GestureDetector(
+      onTap: onTap,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        curve: Curves.easeInOut,
+        padding: const EdgeInsets.symmetric(
+          horizontal: 16,
+          vertical: 8,
+        ),
+        decoration: BoxDecoration(
+          color: isSelected ? color : Colors.transparent,
+          borderRadius: BorderRadius.circular(AppSpacing.radiusXl),
+          border: Border.all(
+            color: isSelected ? color : AppColors.divider,
+            width: isSelected ? 0 : 0.5,
+          ),
+          // iOS 스타일 그림자 (선택시)
+          boxShadow: isSelected
+              ? [
+                  BoxShadow(
+                    color: color.withValues(alpha: 0.3),
+                    blurRadius: 8,
+                    offset: const Offset(0, 2),
+                  ),
+                ]
+              : null,
+        ),
+        child: Text(
+          label,
+          style: Font.main.copyWith(
+            color: isSelected
+                ? Colors.white
+                : (isDark
+                      ? AppColors.textPrimaryDark
+                      : AppColors.textSecondary),
+            fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
+            fontSize: 14,
+            letterSpacing: -0.2,
+          ),
+        ),
+      ),
+    );
   }
 }

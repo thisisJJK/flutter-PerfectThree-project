@@ -3,106 +3,145 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:perfect_three/core/theme/app_colors.dart';
 import 'package:perfect_three/core/theme/app_spacing.dart';
+import 'package:perfect_three/core/theme/app_theme.dart';
 import 'package:perfect_three/core/theme/provider/theme_provider.dart';
 import 'package:perfect_three/data/models/goal.dart';
 import 'package:perfect_three/features/goals/viewmodel/goal_viewmodel.dart';
 
+/// iOS 스타일 루틴 카드
 class MyRoutinCard extends ConsumerWidget {
   final Goal goal;
-  final double? elevation;
 
-  const MyRoutinCard({super.key, required this.goal, this.elevation = 0});
+  const MyRoutinCard({super.key, required this.goal});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final colorScheme = Theme.of(context).colorScheme;
-
     final themeMode = ref.watch(themeModeNotifierProvider).value;
     final isDark = themeMode == ThemeMode.dark;
-    return Row(
-      children: [
-        Expanded(
-          child: GestureDetector(
+    final categoryColor = AppColors.getCategoryColor(goal.category);
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppSpacing.screenPadding,
+        vertical: AppSpacing.s,
+      ),
+      child: Container(
+        decoration: BoxDecoration(
+          color: isDark ? AppColors.surfaceDark : AppColors.surface,
+          borderRadius: BorderRadius.circular(AppSpacing.radiusL),
+          border: Border.all(
+            color: (isDark ? AppColors.dividerDark : AppColors.divider)
+                .withValues(alpha: 0.3),
+            width: 0.5,
+          ),
+          // iOS 스타일 부드러운 그림자
+          boxShadow: [
+            BoxShadow(
+              color: isDark
+                  ? Colors.black.withValues(alpha: 0.3)
+                  : Colors.black.withValues(alpha: 0.08),
+              blurRadius: 12,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
+        child: Material(
+          color: Colors.transparent,
+          child: InkWell(
             onTap: () {
-              //재도전 다이얼로그
               _showRetryDialog(context, ref, goal);
             },
-            child: Card(
-              margin: const EdgeInsets.fromLTRB(
-                AppSpacing.lg,
-                AppSpacing.sm,
-                AppSpacing.sm,
-                AppSpacing.sm,
-              ),
-              elevation: elevation,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(AppSpacing.radius),
-                side: BorderSide(
-                  color: colorScheme.onPrimaryContainer.withValues(alpha: 0.1),
-                ),
-              ),
-
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Row(
-                  children: [
-                    //•
-                    Text('•'),
-                    SizedBox(width: 4),
-                    //카테고리
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: AppSpacing.sm,
-                        vertical: AppSpacing.xs,
-                      ),
-                      decoration: BoxDecoration(
-                        color: isDark
-                            ? AppColors.getCategoryColor(
-                                goal.category,
-                              ).withValues(alpha: 0.3)
-                            : AppColors.getCategoryColor(
-                                goal.category,
-                              ).withValues(alpha: 0.2),
-                        borderRadius: BorderRadius.circular(AppSpacing.radius),
-                      ),
-                      child: Text(goal.category),
+            borderRadius: BorderRadius.circular(AppSpacing.radiusL),
+            child: Padding(
+              padding: const EdgeInsets.all(AppSpacing.l),
+              child: Row(
+                children: [
+                  // 카테고리 배지
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: AppSpacing.s,
+                      vertical: AppSpacing.xs,
                     ),
-                    SizedBox(width: 8),
-
-                    //타이틀
-                    Text(goal.title, style: TextStyle(fontSize: 18)),
-                    Spacer(),
-                    //누적 횟수
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: AppSpacing.sm,
-                        vertical: AppSpacing.xs,
-                      ),
-                      decoration: BoxDecoration(
-                        color: isDark
-                            ? colorScheme.inversePrimary.withValues(alpha: 0.5)
-                            : colorScheme.secondaryContainer,
-                        borderRadius: BorderRadius.circular(AppSpacing.radius),
-                      ),
-                      child: Text("🔥누적 ${goal.successCount}회"),
+                    decoration: BoxDecoration(
+                      color: categoryColor.withValues(alpha: 0.15),
+                      borderRadius: BorderRadius.circular(AppSpacing.radiusS),
                     ),
-                  ],
-                ),
+                    child: Text(
+                      goal.category,
+                      style: Font.main.copyWith(
+                        color: categoryColor,
+                        fontWeight: FontWeight.w600,
+                        fontSize: 12,
+                        letterSpacing: -0.1,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: AppSpacing.m),
+
+                  // 타이틀
+                  Expanded(
+                    child: Text(
+                      goal.title,
+                      style: Font.main.copyWith(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                        letterSpacing: -0.2,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                  const SizedBox(width: AppSpacing.m),
+
+                  // 누적 횟수
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: AppSpacing.s,
+                      vertical: AppSpacing.xs,
+                    ),
+                    decoration: BoxDecoration(
+                      color: isDark
+                          ? AppColors.surfaceElevatedDark
+                          : AppColors.background,
+                      borderRadius: BorderRadius.circular(AppSpacing.radiusS),
+                    ),
+                    child: Text(
+                      "🔥 ${goal.successCount}회",
+                      style: Font.main.copyWith(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600,
+                        color: isDark
+                            ? AppColors.textPrimaryDark
+                            : AppColors.textSecondary,
+                        letterSpacing: -0.1,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: AppSpacing.s),
+
+                  // 삭제 버튼
+                  InkWell(
+                    onTap: () {
+                      _showDeleteDialog(context, ref, goal);
+                    },
+                    borderRadius: BorderRadius.circular(AppSpacing.radiusS),
+                    child: Padding(
+                      padding: const EdgeInsets.all(4.0),
+                      child: Icon(
+                        Icons.delete_outline_rounded,
+                        size: 20,
+                        color: isDark
+                            ? AppColors.textTertiaryDark
+                            : AppColors.textTertiary,
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
           ),
         ),
-        Padding(
-          padding: const EdgeInsets.only(right: AppSpacing.lg),
-          child: GestureDetector(
-            onTap: () {
-              //삭제 다이얼로그
-              _showDeleteDialog(context, ref, goal);
-            },
-            child: Icon(Icons.delete_outline_rounded),
-          ),
-        ),
-      ],
+      ),
     );
   }
 }

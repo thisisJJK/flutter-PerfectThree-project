@@ -20,37 +20,61 @@ class StatsScreen extends ConsumerWidget {
       length: 2,
       child: Scaffold(
         body: TabBarView(
+          physics: NeverScrollableScrollPhysics(),
           children: [AllStatsScreen(), MonthlyStatsScreen()],
         ),
         floatingActionButton: Container(
-          height: 45,
-          width: MediaQuery.of(context).size.width * 0.55,
+          height: 48,
+          width: 200,
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(AppSpacing.radius),
-            color: isDark ? Colors.grey[900] : Colors.grey[300],
+            color: isDark ? AppColors.surfaceElevatedDark : AppColors.surface,
+            borderRadius: BorderRadius.circular(AppSpacing.radiusXl),
+            border: Border.all(
+              color: (isDark ? AppColors.dividerDark : AppColors.divider)
+                  .withValues(alpha: 0.3),
+              width: 0.5,
+            ),
+            // iOS 스타일 부드러운 그림자
+            boxShadow: [
+              BoxShadow(
+                color: isDark
+                    ? Colors.black.withValues(alpha: 0.3)
+                    : Colors.black.withValues(alpha: 0.12),
+                blurRadius: 16,
+                offset: Offset(0, 4),
+              ),
+            ],
           ),
           child: TabBar(
             indicatorSize: TabBarIndicatorSize.tab,
             dividerColor: Colors.transparent,
             indicator: BoxDecoration(
-              color: isDark
-                  ? AppColors.primaryDark.withValues(alpha: 0.6)
-                  : AppColors.primary.withValues(alpha: 0.8),
-              borderRadius: BorderRadius.circular(
-                AppSpacing.radius,
-              ),
+              color: isDark ? AppColors.primaryDark : AppColors.primary,
+              borderRadius: BorderRadius.circular(AppSpacing.radiusXl),
             ),
             splashFactory: NoSplash.splashFactory,
-            labelStyle: Font.jua.copyWith(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-              color: Colors.white70,
+            labelStyle: Font.main.copyWith(
+              fontSize: 15,
+              fontWeight: FontWeight.w600,
+              color: Colors.white,
+              letterSpacing: -0.2,
             ),
-            unselectedLabelStyle: Font.jua.copyWith(fontSize: 15),
+            unselectedLabelStyle: Font.main.copyWith(
+              fontSize: 15,
+              fontWeight: FontWeight.w500,
+              color: isDark
+                  ? AppColors.textSecondaryDark
+                  : AppColors.textSecondary,
+              letterSpacing: -0.2,
+            ),
+            labelColor: Colors.white,
+            unselectedLabelColor: isDark
+                ? AppColors.textSecondaryDark
+                : AppColors.textSecondary,
             onTap: (index) {},
             tabs: [
-              Center(child: Text('전체')),
-              Center(child: Text('월별')),
+              Tab(text: '전체'),
+              Tab(text: '월별'),
             ],
           ),
         ),

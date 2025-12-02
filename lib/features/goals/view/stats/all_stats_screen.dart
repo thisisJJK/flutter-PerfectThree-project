@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:perfect_three/core/theme/app_colors.dart';
 import 'package:perfect_three/core/theme/app_spacing.dart';
+import 'package:perfect_three/core/theme/app_theme.dart';
 import 'package:perfect_three/core/theme/provider/theme_provider.dart';
 import 'package:perfect_three/features/goals/viewmodel/goal_viewmodel.dart';
 import 'package:perfect_three/features/goals/widgets/stat_card.dart';
@@ -109,7 +110,15 @@ class AllStatsScreen extends ConsumerWidget {
           }
 
           if (totalSuccesses == 0) {
-            return const Center(child: Text('아직 달성한 목표가 없습니다.'));
+            return Center(
+              child: Text(
+                '아직 달성한 목표가 없습니다.',
+                style: Font.main.copyWith(
+                  color: AppColors.textSecondary,
+                  fontSize: 16,
+                ),
+              ),
+            );
           }
 
           // Calculate derived statistics
@@ -120,24 +129,6 @@ class AllStatsScreen extends ConsumerWidget {
           final currentStreak = _calculateCurrentStreak(
             uniqueDays.toList(),
           );
-
-          // Calculate overall success rate
-          final now = app_date.DateUtils.now();
-          final oldestDate = uniqueDays.isEmpty
-              ? now
-              : uniqueDays.reduce((a, b) => a.isBefore(b) ? a : b);
-          final totalDays = now.difference(oldestDate).inDays + 1;
-          final activeGoalsCount = goals.where((g) => g.isOngoing).length;
-          final possibleChecks = totalDays * activeGoalsCount * 3;
-          final overallSuccessRate = possibleChecks > 0
-              ? (totalSuccesses / possibleChecks * 100)
-              : 0.0;
-
-          // Weekly average
-          final totalWeeks = (totalDays / 7).ceil();
-          final weeklyAverage = totalWeeks > 0
-              ? (totalSuccesses / totalWeeks)
-              : 0.0;
 
           // Weekday analysis
           final weekdayStats = _analyzeByWeekday(allSuccessDates);
@@ -152,134 +143,160 @@ class AllStatsScreen extends ConsumerWidget {
             ..sort((a, b) => b.value.compareTo(a.value));
 
           return ListView(
-            padding: const EdgeInsets.fromLTRB(16, 16, 16, 88),
-
+            padding: const EdgeInsets.fromLTRB(
+              AppSpacing.screenPadding,
+              AppSpacing.screenPadding,
+              AppSpacing.screenPadding,
+              88,
+            ),
             children: [
               // Heatmap Visualization
-              const Text(
+              Text(
                 '활동 히트맵',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                style: Font.main.copyWith(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: AppSpacing.m),
               _buildHeatmap(context, dailySuccessCounts, isDark),
-              const SizedBox(height: 16),
-              const Text(
+              const SizedBox(height: AppSpacing.l),
+
+              Text(
                 '전체 분석',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                style: Font.main.copyWith(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
+              const SizedBox(height: AppSpacing.m),
               // Stats Grid
               GridView.count(
                 crossAxisCount: 2,
                 shrinkWrap: true,
                 physics: const NeverScrollableScrollPhysics(),
-                mainAxisSpacing: 4,
-                crossAxisSpacing: 4,
-                childAspectRatio: 1.5,
+                mainAxisSpacing: AppSpacing.s,
+                crossAxisSpacing: AppSpacing.s,
+                childAspectRatio: 1.3,
                 children: [
                   StatCard(
                     label: '총 누적 성공',
                     value: '$totalSuccesses회',
-                    icon: Icons.check_circle,
-                    color: Colors.green,
-                    isDark: true,
+                    icon: Icons.check_circle_outline_rounded,
+                    color: AppColors.success,
+                    isDark: isDark,
                   ),
                   StatCard(
                     label: '활동 일수',
                     value: '$totalActiveDays일',
-                    icon: Icons.calendar_month,
-                    color: Colors.blue.withValues(alpha: 0.7),
-                    isDark: true,
+                    icon: Icons.calendar_today_rounded,
+                    color: AppColors.info,
+                    isDark: isDark,
                   ),
-                  // StatCard(
-                  //   label: '전체 성공률',
-                  //   value: '${overallSuccessRate.toStringAsFixed(1)}%',
-                  //   icon: Icons.percent,
-                  // ),
                   StatCard(
                     label: '최장 연속',
                     value: '$longestStreak일',
-                    icon: Icons.emoji_events,
-                    color: Colors.amber,
-                    isDark: true,
+                    icon: Icons.emoji_events_outlined,
+                    color: AppColors.warning,
+                    isDark: isDark,
                   ),
                   StatCard(
                     label: '현재 연속',
                     value: '$currentStreak일',
-                    icon: Icons.local_fire_department,
-                    color: Colors.red.withValues(alpha: 0.8),
-                    isDark: true,
+                    icon: Icons.local_fire_department_rounded,
+                    color: AppColors.error,
+                    isDark: isDark,
                   ),
-                  // StatCard(
-                  //   label: '주평균',
-                  //   value: weeklyAverage.toStringAsFixed(1),
-                  //   icon: Icons.show_chart,
-                  //   subtitle: '회/주',
-                  // ),
                 ],
               ),
-              const SizedBox(height: 24),
+              const SizedBox(height: AppSpacing.xl),
 
               // Weekday Analysis
-              const Text(
+              Text(
                 '요일별 분석',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                style: Font.main.copyWith(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: AppSpacing.m),
               _buildWeekdayChart(
                 context,
                 weekdayStats,
                 mostProductiveWeekday,
                 isDark,
               ),
-              const SizedBox(height: 24),
+              const SizedBox(height: AppSpacing.xl),
 
               // Category Breakdown
               if (categorySuccessCounts.length > 1) ...[
-                const Text(
+                Text(
                   '카테고리별 분포',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  style: Font.main.copyWith(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
-                const SizedBox(height: 16),
+                const SizedBox(height: AppSpacing.m),
                 _buildCategoryBreakdown(
                   context,
                   categorySuccessCounts,
                   totalSuccesses,
                   isDark,
                 ),
-                const SizedBox(height: 24),
+                const SizedBox(height: AppSpacing.xl),
               ],
 
               // Goal Breakdown
-              const Text(
+              Text(
                 '목표별 누적 현황',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                style: Font.main.copyWith(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: AppSpacing.m),
               ...sortedEntries.map((entry) {
                 final goal = goals.firstWhere((g) => g.title == entry.key);
+                final categoryColor = AppColors.getCategoryColor(goal.category);
+
                 return Card(
-                  margin: const EdgeInsets.only(bottom: 8),
+                  margin: const EdgeInsets.only(bottom: AppSpacing.s),
+                  elevation: 0,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(AppSpacing.radius),
+                    side: BorderSide(
+                      color: isDark ? AppColors.dividerDark : AppColors.divider,
+                      width: 1,
+                    ),
+                  ),
                   child: ListTile(
+                    contentPadding: EdgeInsets.symmetric(
+                      horizontal: AppSpacing.m,
+                      vertical: AppSpacing.xs,
+                    ),
                     leading: Container(
                       padding: const EdgeInsets.symmetric(
-                        horizontal: AppSpacing.sm,
+                        horizontal: AppSpacing.s,
                         vertical: AppSpacing.xs,
                       ),
                       decoration: BoxDecoration(
-                        color: isDark
-                            ? AppColors.getCategoryColor(
-                                goal.category,
-                              ).withValues(alpha: 0.3)
-                            : AppColors.getCategoryColor(
-                                goal.category,
-                              ).withValues(alpha: 0.2),
-                        borderRadius: BorderRadius.circular(
-                          AppSpacing.radius,
+                        color: categoryColor.withValues(alpha: 0.15),
+                        borderRadius: BorderRadius.circular(AppSpacing.radiusS),
+                      ),
+                      child: Text(
+                        goal.category,
+                        style: Font.main.copyWith(
+                          color: categoryColor,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 12,
                         ),
                       ),
-                      child: Text(goal.category),
                     ),
-                    title: Text(entry.key),
+                    title: Text(
+                      entry.key,
+                      style: Font.main.copyWith(fontWeight: FontWeight.w600),
+                    ),
                     trailing: Container(
                       padding: const EdgeInsets.symmetric(
                         horizontal: 12,
@@ -296,18 +313,18 @@ class AllStatsScreen extends ConsumerWidget {
                         children: [
                           Icon(
                             CupertinoIcons.triangle_fill,
-                            size: 12,
+                            size: 10,
                             color: isDark
-                                ? AppColors.primaryDark.withValues(alpha: 0.7)
-                                : AppColors.primary.withValues(alpha: 0.7),
+                                ? AppColors.primaryDark
+                                : AppColors.primary,
                           ),
                           const SizedBox(width: 4),
                           Text(
                             '${entry.value}',
-                            style: TextStyle(
+                            style: Font.main.copyWith(
                               color: isDark
-                                  ? AppColors.primaryDark.withValues(alpha: 0.7)
-                                  : AppColors.primary.withValues(alpha: 0.7),
+                                  ? AppColors.primaryDark
+                                  : AppColors.primary,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
@@ -393,12 +410,14 @@ class AllStatsScreen extends ConsumerWidget {
 
   Color _getColorForCount(BuildContext context, int count, bool isDark) {
     if (count == 0) {
-      return isDark ? Colors.white.withOpacity(0.05) : Colors.grey.shade200;
+      return isDark
+          ? Colors.white.withValues(alpha: 0.05)
+          : Colors.grey.shade200;
     }
 
     final baseColor = isDark ? AppColors.primaryDark : AppColors.primary;
-    if (count == 1) return baseColor.withOpacity(0.33);
-    if (count == 2) return baseColor.withOpacity(0.66);
+    if (count == 1) return baseColor.withValues(alpha: 0.33);
+    if (count == 2) return baseColor.withValues(alpha: 0.66);
     return baseColor;
   }
 
@@ -412,28 +431,36 @@ class AllStatsScreen extends ConsumerWidget {
     final maxCount = weekdayStats.isEmpty ? 1 : weekdayStats.values.reduce(max);
 
     return Card(
+      elevation: 0,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(AppSpacing.radiusL),
+        side: BorderSide(
+          color: isDark ? AppColors.dividerDark : AppColors.divider,
+          width: 1,
+        ),
+      ),
       child: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(AppSpacing.m),
         child: Column(
           children: [
             Row(
               children: [
                 Icon(
-                  Icons.star,
-                  size: 16,
+                  Icons.star_rounded,
+                  size: 18,
                   color: Colors.amber,
                 ),
                 const SizedBox(width: 8),
                 Text(
                   '가장 생산적인 요일: ${weekdays[mostProductiveDay - 1]}요일',
-                  style: const TextStyle(
+                  style: Font.main.copyWith(
                     fontSize: 14,
                     fontWeight: FontWeight.w500,
                   ),
                 ),
               ],
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: AppSpacing.m),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               crossAxisAlignment: CrossAxisAlignment.end,
@@ -450,14 +477,14 @@ class AllStatsScreen extends ConsumerWidget {
                       children: [
                         Text(
                           '$count',
-                          style: TextStyle(
+                          style: Font.main.copyWith(
                             fontSize: 11,
                             fontWeight: FontWeight.bold,
                             color: isMostProductive
                                 ? Colors.amber
                                 : isDark
-                                ? AppColors.primaryDark.withOpacity(0.7)
-                                : AppColors.primary.withOpacity(0.5),
+                                ? AppColors.primaryDark.withValues(alpha: 0.7)
+                                : AppColors.primary.withValues(alpha: 0.5),
                           ),
                         ),
                         const SizedBox(height: 4),
@@ -467,8 +494,8 @@ class AllStatsScreen extends ConsumerWidget {
                             color: isMostProductive
                                 ? Colors.amber
                                 : isDark
-                                ? AppColors.primaryDark.withOpacity(0.5)
-                                : AppColors.primary.withOpacity(0.5),
+                                ? AppColors.primaryDark.withValues(alpha: 0.5)
+                                : AppColors.primary.withValues(alpha: 0.5),
                             borderRadius: const BorderRadius.vertical(
                               top: Radius.circular(4),
                             ),
@@ -477,11 +504,14 @@ class AllStatsScreen extends ConsumerWidget {
                         const SizedBox(height: 8),
                         Text(
                           weekdays[index],
-                          style: TextStyle(
+                          style: Font.main.copyWith(
                             fontSize: 11,
                             fontWeight: isMostProductive
                                 ? FontWeight.bold
                                 : FontWeight.normal,
+                            color: isDark
+                                ? AppColors.textSecondaryDark
+                                : AppColors.textSecondary,
                           ),
                         ),
                       ],
@@ -505,18 +535,17 @@ class AllStatsScreen extends ConsumerWidget {
     final sortedCategories = categoryStats.entries.toList()
       ..sort((a, b) => b.value.compareTo(a.value));
 
-    // final colors = [
-    //   Colors.blue,
-    //   Colors.green,
-    //   Colors.orange,
-    //   Colors.purple,
-    //   Colors.red,
-    //   Colors.teal,
-    // ];
-
     return Card(
+      elevation: 0,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(AppSpacing.radiusL),
+        side: BorderSide(
+          color: isDark ? AppColors.dividerDark : AppColors.divider,
+          width: 1,
+        ),
+      ),
       child: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(AppSpacing.m),
         child: Column(
           children: sortedCategories.map((entry) {
             final category = entry.key;
@@ -539,13 +568,13 @@ class AllStatsScreen extends ConsumerWidget {
                             height: 12,
                             decoration: BoxDecoration(
                               color: color,
-                              borderRadius: BorderRadius.circular(2),
+                              borderRadius: BorderRadius.circular(4),
                             ),
                           ),
                           const SizedBox(width: 8),
                           Text(
                             category,
-                            style: const TextStyle(
+                            style: Font.main.copyWith(
                               fontWeight: FontWeight.w500,
                             ),
                           ),
@@ -553,9 +582,11 @@ class AllStatsScreen extends ConsumerWidget {
                       ),
                       Text(
                         '$count회 (${percentage.toStringAsFixed(1)}%)',
-                        style: TextStyle(
+                        style: Font.main.copyWith(
                           fontSize: 12,
-                          color: Colors.grey.shade600,
+                          color: isDark
+                              ? AppColors.textSecondaryDark
+                              : AppColors.textSecondary,
                         ),
                       ),
                     ],
@@ -566,7 +597,7 @@ class AllStatsScreen extends ConsumerWidget {
                     child: LinearProgressIndicator(
                       value: percentage / 100,
                       backgroundColor: isDark
-                          ? Colors.white.withOpacity(0.1)
+                          ? Colors.white.withValues(alpha: 0.1)
                           : Colors.grey.shade200,
                       valueColor: AlwaysStoppedAnimation<Color>(color),
                       minHeight: 8,

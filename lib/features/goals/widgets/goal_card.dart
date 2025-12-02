@@ -3,189 +3,236 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:perfect_three/core/theme/app_colors.dart';
 import 'package:perfect_three/core/theme/app_spacing.dart';
+import 'package:perfect_three/core/theme/app_theme.dart';
 import 'package:perfect_three/core/theme/provider/theme_provider.dart';
 import 'package:perfect_three/features/goals/viewmodel/goal_viewmodel.dart';
 import 'package:perfect_three/shared/utils/date_utils.dart';
 
 import '../../../../data/models/goal.dart';
 
+/// iOS 스타일 목표 카드
 class GoalCard extends ConsumerWidget {
   final Goal goal;
-  final double? elevation;
 
-  const GoalCard({super.key, required this.goal, this.elevation = 0});
+  const GoalCard({super.key, required this.goal});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final colorScheme = Theme.of(context).colorScheme;
-
     final themeMode = ref.watch(themeModeNotifierProvider).value;
     final isDark = themeMode == ThemeMode.dark;
     final category = goal.category;
+    final categoryColor = AppColors.getCategoryColor(category);
 
-    return Card(
+    return Container(
       margin: const EdgeInsets.symmetric(
-        vertical: AppSpacing.sm,
-        horizontal: AppSpacing.lg,
+        vertical: 6, // 더 작은 수직 여백
+        horizontal: AppSpacing.screenPadding,
       ),
-      elevation: elevation,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(AppSpacing.radius),
-        side: BorderSide(
-          color: colorScheme.onPrimaryContainer.withValues(alpha: 0.1),
+      decoration: BoxDecoration(
+        color: isDark ? AppColors.surfaceDark : AppColors.surface,
+        borderRadius: BorderRadius.circular(AppSpacing.radiusL),
+        border: Border.all(
+          color: (isDark ? AppColors.dividerDark : AppColors.divider)
+              .withValues(alpha: 0.3),
+          width: 0.5,
         ),
+        // iOS 스타일 부드러운 그림자
+        boxShadow: [
+          BoxShadow(
+            color: isDark
+                ? Colors.black.withValues(alpha: 0.3)
+                : Colors.black.withValues(alpha: 0.08),
+            blurRadius: 12,
+            offset: const Offset(0, 4),
+          ),
+        ],
       ),
-
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(
-          AppSpacing.lg,
-          AppSpacing.md,
-          AppSpacing.lg,
-          AppSpacing.md,
-        ),
+        padding: const EdgeInsets.all(AppSpacing.m), // l에서 m으로 감소
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
               children: [
                 Container(
                   padding: const EdgeInsets.symmetric(
-                    horizontal: AppSpacing.sm,
+                    horizontal: AppSpacing.s,
                     vertical: AppSpacing.xs,
                   ),
                   decoration: BoxDecoration(
-                    color: isDark
-                        ? AppColors.getCategoryColor(
-                            category,
-                          ).withValues(alpha: 0.3)
-                        : AppColors.getCategoryColor(
-                            category,
-                          ).withValues(alpha: 0.2),
-                    borderRadius: BorderRadius.circular(AppSpacing.radius),
+                    color: categoryColor.withValues(alpha: 0.15),
+                    borderRadius: BorderRadius.circular(AppSpacing.radiusS),
                   ),
-                  child: Text(category),
+                  child: Text(
+                    category,
+                    style: Font.main.copyWith(
+                      color: categoryColor,
+                      fontWeight: FontWeight.w600,
+                      fontSize: 12,
+                      letterSpacing: -0.1,
+                    ),
+                  ),
                 ),
                 Spacer(),
                 Container(
                   padding: const EdgeInsets.symmetric(
-                    horizontal: AppSpacing.sm,
+                    horizontal: AppSpacing.s,
                     vertical: AppSpacing.xs,
                   ),
                   decoration: BoxDecoration(
                     color: isDark
-                        ? colorScheme.inversePrimary.withValues(alpha: 0.5)
-                        : colorScheme.secondaryContainer,
-                    borderRadius: BorderRadius.circular(AppSpacing.radius),
+                        ? AppColors.surfaceElevatedDark
+                        : AppColors.background,
+                    borderRadius: BorderRadius.circular(AppSpacing.radiusS),
                   ),
-                  child: Text("🔥누적 ${goal.successCount}회"),
+                  child: Text(
+                    "🔥 ${goal.successCount}회 성공",
+                    style: Font.main.copyWith(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                      color: isDark
+                          ? AppColors.textPrimaryDark
+                          : AppColors.textSecondary,
+                      letterSpacing: -0.1,
+                    ),
+                  ),
                 ),
-
-                SizedBox(width: 8),
-
-                GestureDetector(
+                SizedBox(width: AppSpacing.s),
+                InkWell(
                   onTap: () {
                     _showDeleteDialog(context, ref, goal);
                   },
-                  child: Icon(Icons.delete_outlined),
+                  borderRadius: BorderRadius.circular(AppSpacing.radiusS),
+                  child: Padding(
+                    padding: const EdgeInsets.all(4.0),
+                    child: Icon(
+                      Icons.delete_outline_rounded,
+                      size: 20,
+                      color: AppColors.textTertiary,
+                    ),
+                  ),
                 ),
               ],
             ),
-            Divider(),
+            SizedBox(height: AppSpacing.s), // m에서 s로 감소
+            Text(
+              goal.title,
+              style: Font.display.copyWith(
+                fontSize: 17, // 20에서 17로 감소
+                fontWeight: FontWeight.w700,
+                color: isDark
+                    ? AppColors.textPrimaryDark
+                    : AppColors.textPrimary,
+                letterSpacing: -0.3,
+              ),
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+            ),
+            SizedBox(height: AppSpacing.m), // l에서 m으로 감소
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Expanded(
-                  child: Text(
-                    '• ${goal.title}',
-                    style: TextStyle(fontSize: 17),
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ),
+              children: List.generate(3, (index) {
+                final isChecked = goal.checks[index];
+                final bool lastDay = goal.lastDay;
+                final now = DateUtils.now();
+                DateTime createdDay = DateUtils.dateOnly(goal.createdAt);
+                bool isMustCheckToday =
+                    DateUtils.differenceDay(now, createdDay) % 3 == index;
+                bool isLast = DateUtils.differenceDay(now, createdDay) % 3 == 2;
 
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: List.generate(3, (index) {
-                    final isChecked = goal.checks[index];
-                    final bool lastDay = goal.lastDay;
-                    final now = DateUtils.now();
-                    DateTime createdDay = DateUtils.dateOnly(goal.createdAt);
-                    bool isMustCheckToday =
-                        DateUtils.differenceDay(now, createdDay) % 3 == index;
-                    bool isLast =
-                        DateUtils.differenceDay(now, createdDay) % 3 == 2;
+                return Expanded(
+                  child: GestureDetector(
+                    onTap: () {
+                      ref
+                          .read(goalViewModelProvider.notifier)
+                          .toggleCheck(goal, index);
 
-                    return Row(
+                      if (index == 2 && lastDay && isLast) {
+                        _showRetryDialog(context, ref, goal);
+                      }
+                    },
+                    child: Column(
                       children: [
-                        GestureDetector(
-                          onTap: () {
-                            ref
-                                .read(goalViewModelProvider.notifier)
-                                .toggleCheck(goal, index);
-
-                            if (index == 2 && lastDay && isLast) {
-                              //재도전 여부 다이얼로그
-                              _showRetryDialog(context, ref, goal);
-                            }
-                          },
-                          child: Column(
-                            children: [
-                              AnimatedContainer(
-                                duration: const Duration(milliseconds: 180),
-                                width: 36,
-                                height: 36,
-                                decoration: BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  border: isChecked && isMustCheckToday
-                                      ? Border.all(width: 0)
-                                      : Border.all(
-                                          width: 2,
-                                          color: colorScheme.onPrimaryContainer
-                                              .withValues(alpha: 0.5),
-                                        ),
-                                  color: isChecked
-                                      ? colorScheme.primary
-                                      : colorScheme.surfaceContainerHigh,
-                                  boxShadow: isChecked
-                                      ? [
-                                          BoxShadow(
-                                            color: colorScheme.primary
-                                                .withValues(alpha: 0.3),
-                                            blurRadius: 8,
-                                            offset: const Offset(0, 3),
-                                          ),
-                                        ]
-                                      : [],
-                                ),
-                                child: isChecked
-                                    ? Icon(
-                                        Icons.check,
-                                        color: isChecked
-                                            ? colorScheme.onPrimary
-                                            : Colors.transparent,
-                                        size: 26,
-                                      )
-                                    : isMustCheckToday
-                                    ? Center(
-                                        child: Text(
-                                          (index + 1).toString(),
-                                          style: TextStyle(
-                                            fontSize: 18,
-                                            color: colorScheme
-                                                .onPrimaryContainer
-                                                .withValues(alpha: 0.3),
-                                          ),
-                                        ),
-                                      )
-                                    : null,
-                              ),
-                            ],
+                        AnimatedContainer(
+                          duration: const Duration(milliseconds: 250),
+                          curve: Curves.easeInOut,
+                          width: 46, // 52에서 46으로 감소
+                          height: 46,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: isChecked
+                                ? categoryColor
+                                : (isMustCheckToday
+                                      ? categoryColor.withValues(alpha: 0.12)
+                                      : (isDark
+                                            ? AppColors.backgroundSecondaryDark
+                                            : AppColors.backgroundSecondary)),
+                            border: Border.all(
+                              width: isChecked ? 0 : 2,
+                              color: isChecked
+                                  ? Colors.transparent
+                                  : (isMustCheckToday
+                                        ? categoryColor
+                                        : (isDark
+                                              ? AppColors.dividerDark
+                                              : AppColors.divider)),
+                            ),
+                            // iOS 스타일 부드러운 그림자
+                            boxShadow: isChecked
+                                ? [
+                                    BoxShadow(
+                                      color: categoryColor.withValues(
+                                        alpha: 0.35,
+                                      ),
+                                      blurRadius: 12,
+                                      offset: const Offset(0, 4),
+                                    ),
+                                  ]
+                                : [],
+                          ),
+                          child: Center(
+                            child: isChecked
+                                ? Icon(
+                                    Icons.check_rounded,
+                                    color: Colors.white,
+                                    size: 26, // 30에서 26으로 감소
+                                  )
+                                : Text(
+                                    (index + 1).toString(),
+                                    style: Font.display.copyWith(
+                                      fontSize: 18, // 20에서 18로 감소
+                                      fontWeight: FontWeight.w700,
+                                      color: isMustCheckToday
+                                          ? categoryColor
+                                          : (isDark
+                                                ? AppColors.textTertiaryDark
+                                                : AppColors.textTertiary),
+                                      letterSpacing: -0.3,
+                                    ),
+                                  ),
                           ),
                         ),
-                        SizedBox(width: 5),
+                        SizedBox(height: AppSpacing.xs),
+                        Text(
+                          index == 0 ? "1일차" : (index == 1 ? "2일차" : "3일차"),
+                          style: Font.main.copyWith(
+                            fontSize: 12,
+                            color: isMustCheckToday
+                                ? categoryColor
+                                : (isDark
+                                      ? AppColors.textTertiaryDark
+                                      : AppColors.textTertiary),
+                            fontWeight: isMustCheckToday
+                                ? FontWeight.w600
+                                : FontWeight.w500,
+                            letterSpacing: -0.1,
+                          ),
+                        ),
                       ],
-                    );
-                  }),
-                ),
-              ],
+                    ),
+                  ),
+                );
+              }),
             ),
           ],
         ),
@@ -195,79 +242,49 @@ class GoalCard extends ConsumerWidget {
 }
 
 void _showRetryDialog(BuildContext context, WidgetRef ref, Goal goal) async {
-  final colorScheme = Theme.of(context).colorScheme;
-  final textTheme = Theme.of(context).textTheme;
-
   return showDialog(
     barrierDismissible: false,
     context: context,
     builder: (BuildContext context) {
-      final double width = 110;
-      final double height = 45;
       return AlertDialog(
-        title: Text('Perfect Three 성공!'),
-        content: Text('내 루틴으로 만들었어요!\n이어서 계속 하시겠어요?'),
+        title: Text(
+          '🎉 3일 성공!',
+          style: Font.main.copyWith(fontWeight: FontWeight.bold),
+        ),
+        content: Text(
+          '축하합니다! 루틴을 성공적으로 마쳤어요.\n이어서 계속 도전하시겠어요?',
+          style: Font.main,
+        ),
         actions: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              GestureDetector(
-                onTap: () {
-                  //재도전
-                  //리셋
-                  ref
-                      .read(goalViewModelProvider.notifier)
-                      .resetAfterCompletedGoal(goal);
-                  context.pop();
-                },
-                child: Container(
-                  width: width,
-                  height: height,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(12),
-                    color: colorScheme.primaryContainer,
-                  ),
-                  child: Center(
-                    child: Text(
-                      '계속하기',
-                      style: textTheme.bodyMedium!.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                ),
+          TextButton(
+            onPressed: () {
+              ref
+                  .read(goalViewModelProvider.notifier)
+                  .toggleIsOngoing(goal, false);
+              context.pop();
+            },
+            child: Text(
+              '그만하기',
+              style: Font.main.copyWith(color: AppColors.textSecondary),
+            ),
+          ),
+          FilledButton(
+            onPressed: () {
+              ref
+                  .read(goalViewModelProvider.notifier)
+                  .resetAfterCompletedGoal(goal);
+              context.pop();
+            },
+            style: FilledButton.styleFrom(
+              backgroundColor: AppColors.primary,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(AppSpacing.radiusS),
               ),
-              GestureDetector(
-                onTap: () {
-                  //내 습관으로 이동
-                  //isOnging = false
-                  ref
-                      .read(goalViewModelProvider.notifier)
-                      .toggleIsOngoing(goal, false);
-
-                  context.pop();
-                },
-                child: Container(
-                  width: width,
-                  height: height,
-                  decoration: BoxDecoration(
-                    border: Border.all(
-                      width: 0.2,
-                      color: colorScheme.onSurface,
-                    ),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Center(
-                    child: Text(
-                      '그만하기',
-                      style: textTheme.bodyMedium!.copyWith(
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ],
+            ),
+            child: Text(
+              '계속하기',
+              style: Font.main.copyWith(fontWeight: FontWeight.bold),
+            ),
           ),
         ],
       );
@@ -276,70 +293,38 @@ void _showRetryDialog(BuildContext context, WidgetRef ref, Goal goal) async {
 }
 
 void _showDeleteDialog(BuildContext context, WidgetRef ref, Goal goal) async {
-  final colorScheme = Theme.of(context).colorScheme;
-  final textTheme = Theme.of(context).textTheme;
-
   return showDialog(
     barrierDismissible: false,
     context: context,
     builder: (BuildContext context) {
-      final double width = 110;
-      final double height = 45;
       return AlertDialog(
-        title: Text('루틴 삭제'),
-        content: Text('성공하지 못한 루틴은 \n삭제하면 되돌릴 수 없어요.\n정말 삭제하시겠어요?'),
+        title: Text(
+          '루틴 삭제',
+          style: Font.main.copyWith(fontWeight: FontWeight.bold),
+        ),
+        content: Text('정말 삭제하시겠어요?\n삭제된 루틴은 복구할 수 없습니다.', style: Font.main),
         actions: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              GestureDetector(
-                onTap: () {
-                  ref.read(goalViewModelProvider.notifier).deleteGoal(goal.id);
-                  context.pop();
-                },
-                child: Container(
-                  width: width,
-                  height: height,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(12),
-                    color: Colors.red,
-                  ),
-                  child: Center(
-                    child: Text(
-                      '삭제하기',
-                      style: textTheme.bodyMedium!.copyWith(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                ),
+          TextButton(
+            onPressed: () {
+              context.pop();
+            },
+            child: Text(
+              '취소',
+              style: Font.main.copyWith(color: AppColors.textSecondary),
+            ),
+          ),
+          TextButton(
+            onPressed: () {
+              ref.read(goalViewModelProvider.notifier).deleteGoal(goal.id);
+              context.pop();
+            },
+            child: Text(
+              '삭제',
+              style: Font.main.copyWith(
+                color: AppColors.error,
+                fontWeight: FontWeight.bold,
               ),
-              GestureDetector(
-                onTap: () {
-                  context.pop();
-                },
-                child: Container(
-                  width: width,
-                  height: height,
-                  decoration: BoxDecoration(
-                    border: Border.all(
-                      width: 0.2,
-                      color: colorScheme.onSurface,
-                    ),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Center(
-                    child: Text(
-                      '취소하기',
-                      style: textTheme.bodyMedium!.copyWith(
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ],
+            ),
           ),
         ],
       );
