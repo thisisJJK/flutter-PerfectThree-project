@@ -8,7 +8,7 @@ import 'package:perfect_three/core/theme/provider/theme_provider.dart';
 import 'package:perfect_three/features/goals/viewmodel/goal_viewmodel.dart';
 import 'package:perfect_three/shared/utils/date_utils.dart';
 
-import '../../../../data/models/goal.dart';
+import '../../../data/goal/models/goal.dart';
 
 /// iOS 스타일 목표 카드
 class GoalCard extends ConsumerWidget {

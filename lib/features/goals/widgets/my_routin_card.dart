@@ -5,7 +5,7 @@ import 'package:perfect_three/core/theme/app_colors.dart';
 import 'package:perfect_three/core/theme/app_spacing.dart';
 import 'package:perfect_three/core/theme/app_theme.dart';
 import 'package:perfect_three/core/theme/provider/theme_provider.dart';
-import 'package:perfect_three/data/models/goal.dart';
+import 'package:perfect_three/data/goal/models/goal.dart';
 import 'package:perfect_three/features/goals/viewmodel/goal_viewmodel.dart';
 
 /// iOS 스타일 루틴 카드

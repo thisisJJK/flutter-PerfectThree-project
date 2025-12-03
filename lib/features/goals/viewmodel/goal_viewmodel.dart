@@ -4,8 +4,8 @@ import 'package:perfect_three/shared/utils/date_utils.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:uuid/uuid.dart';
 
-import '../../../../data/models/goal.dart';
-import '../../../../data/repositories/goal_repository.dart';
+import '../../../data/goal/models/goal.dart';
+import '../../../data/goal/repositories/goal_repository.dart';
 import '../../../shared/utils/custom_logger.dart';
 
 part 'goal_viewmodel.g.dart';

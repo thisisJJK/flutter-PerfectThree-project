@@ -3,7 +3,7 @@ import 'package:perfect_three/shared/utils/app_error.dart';
 import 'package:perfect_three/shared/utils/date_utils.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-import '../../shared/utils/custom_logger.dart';
+import '../../../shared/utils/custom_logger.dart';
 import '../models/goal.dart';
 
 part 'goal_repository.g.dart';

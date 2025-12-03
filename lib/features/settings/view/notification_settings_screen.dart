@@ -4,30 +4,18 @@ import 'package:perfect_three/core/theme/app_colors.dart';
 import 'package:perfect_three/core/theme/app_spacing.dart';
 import 'package:perfect_three/core/theme/app_theme.dart';
 import 'package:perfect_three/core/theme/provider/theme_provider.dart';
+import 'package:perfect_three/features/settings/viewmodel/notification_settings_viewmodel.dart';
 
-class NotificationSettingsScreen extends ConsumerStatefulWidget {
+class NotificationSettingsScreen extends ConsumerWidget {
   const NotificationSettingsScreen({super.key});
 
   @override
-  ConsumerState<NotificationSettingsScreen> createState() =>
-      _NotificationSettingsScreenState();
-}
-
-class _NotificationSettingsScreenState
-    extends ConsumerState<NotificationSettingsScreen> {
-  // 임시 상태 값 (UI 확인용)
-  bool _allowNotifications = true;
-  bool _routineAlerts = true;
-  bool _soundEnabled = true;
-  bool _vibrationEnabled = true;
-  bool _marketingAlerts = false;
-  TimeOfDay _dailyBriefingTime = const TimeOfDay(hour: 9, minute: 0);
-
-  @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final themeMode =
         ref.watch(themeModeNotifierProvider).valueOrNull ?? ThemeMode.system;
     final isDark = themeMode == ThemeMode.dark;
+    final settings = ref.watch(notificationSettingsViewModelProvider);
+    final viewModel = ref.read(notificationSettingsViewModelProvider.notifier);
 
     return Scaffold(
       appBar: AppBar(
@@ -55,18 +43,14 @@ class _NotificationSettingsScreenState
               _buildSwitchTile(
                 title: '알림 허용',
                 subtitle: '모든 알림을 켜고 끕니다.',
-                value: _allowNotifications,
+                value: settings.allowNotifications,
                 isDark: isDark,
-                onChanged: (value) {
-                  setState(() {
-                    _allowNotifications = value;
-                  });
-                },
+                onChanged: (value) => viewModel.updateAllowNotifications(value),
               ),
             ],
           ),
           const SizedBox(height: AppSpacing.l),
-          if (_allowNotifications) ...[
+          if (settings.allowNotifications) ...[
             _buildSectionHeader('목표 알림', isDark),
             _buildSettingsGroup(
               isDark: isDark,
@@ -74,23 +58,20 @@ class _NotificationSettingsScreenState
                 _buildSwitchTile(
                   title: '데일리 목표 알림',
                   subtitle: '매일 설정한 시간에 목표 확인 알림을 받습니다.',
-                  value: _routineAlerts,
+                  value: settings.routineAlerts,
                   isDark: isDark,
-                  onChanged: (value) {
-                    setState(() {
-                      _routineAlerts = value;
-                    });
-                  },
+                  onChanged: (value) => viewModel.updateRoutineAlerts(value),
                 ),
                 _buildDivider(isDark),
                 _buildTimePickerTile(
+                  context: context,
                   title: '알림 시간',
-                  time: _dailyBriefingTime,
+                  time: settings.timeOfDay,
                   isDark: isDark,
                   onTap: () async {
                     final TimeOfDay? picked = await showTimePicker(
                       context: context,
-                      initialTime: _dailyBriefingTime,
+                      initialTime: settings.timeOfDay,
                       builder: (context, child) {
                         return Theme(
                           data: isDark ? ThemeData.dark() : ThemeData.light(),
@@ -98,10 +79,8 @@ class _NotificationSettingsScreenState
                         );
                       },
                     );
-                    if (picked != null && picked != _dailyBriefingTime) {
-                      setState(() {
-                        _dailyBriefingTime = picked;
-                      });
+                    if (picked != null && picked != settings.timeOfDay) {
+                      viewModel.updateDailyBriefingTime(picked);
                     }
                   },
                 ),
@@ -115,7 +94,7 @@ class _NotificationSettingsScreenState
                 _buildSwitchTile(
                   title: '3일 성공 미리 알림',
                   subtitle: '작심삼일 성공 당일 미리 알림을 받습니다.',
-                  value: true, // 임시 값
+                  value: true, // TODO: Add to model if needed
                   isDark: isDark,
                   onChanged: (value) {},
                 ),
@@ -123,13 +102,9 @@ class _NotificationSettingsScreenState
                 _buildSwitchTile(
                   title: '응원 메시지',
                   subtitle: '목표 달성을 위한 응원 메시지를 받습니다.',
-                  value: _marketingAlerts,
+                  value: settings.marketingAlerts,
                   isDark: isDark,
-                  onChanged: (value) {
-                    setState(() {
-                      _marketingAlerts = value;
-                    });
-                  },
+                  onChanged: (value) => viewModel.updateMarketingAlerts(value),
                 ),
               ],
             ),
@@ -140,24 +115,16 @@ class _NotificationSettingsScreenState
               children: [
                 _buildSwitchTile(
                   title: '소리',
-                  value: _soundEnabled,
+                  value: settings.soundEnabled,
                   isDark: isDark,
-                  onChanged: (value) {
-                    setState(() {
-                      _soundEnabled = value;
-                    });
-                  },
+                  onChanged: (value) => viewModel.updateSoundEnabled(value),
                 ),
                 _buildDivider(isDark),
                 _buildSwitchTile(
                   title: '진동',
-                  value: _vibrationEnabled,
+                  value: settings.vibrationEnabled,
                   isDark: isDark,
-                  onChanged: (value) {
-                    setState(() {
-                      _vibrationEnabled = value;
-                    });
-                  },
+                  onChanged: (value) => viewModel.updateVibrationEnabled(value),
                 ),
               ],
             ),
@@ -272,6 +239,7 @@ class _NotificationSettingsScreenState
   }
 
   Widget _buildTimePickerTile({
+    required BuildContext context,
     required String title,
     required TimeOfDay time,
     required bool isDark,

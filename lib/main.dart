@@ -2,9 +2,11 @@ import 'package:flutter/material.dart' hide DateUtils;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:perfect_three/core/routes/app_router.dart';
+import 'package:perfect_three/core/services/notification_service.dart';
 import 'package:perfect_three/core/theme/app_theme.dart';
 import 'package:perfect_three/core/theme/provider/theme_provider.dart';
-import 'package:perfect_three/data/models/goal.dart';
+import 'package:perfect_three/data/goal/models/goal.dart';
+import 'package:perfect_three/data/settings/model/notification_settings.dart';
 import 'package:perfect_three/shared/utils/date_utils.dart';
 
 import 'shared/utils/custom_logger.dart';
@@ -15,8 +17,14 @@ void main() async {
   await Hive.initFlutter();
 
   Hive.registerAdapter(GoalAdapter());
+  Hive.registerAdapter(NotificationSettingsAdapter());
 
   await Hive.openBox<Goal>('goals_box');
+  await Hive.openBox<NotificationSettings>('notification_settings');
+
+  final notificationService = NotificationService();
+  await notificationService.init();
+  await notificationService.requestPermissions();
 
   DateUtils.jumpTime(0);
 
