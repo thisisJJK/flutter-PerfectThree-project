@@ -114,7 +114,9 @@ class AllStatsScreen extends ConsumerWidget {
               child: Text(
                 '아직 달성한 목표가 없습니다.',
                 style: Font.main.copyWith(
-                  color: AppColors.textSecondary,
+                  color: isDark
+                      ? AppColors.textSecondaryDark
+                      : AppColors.textSecondary,
                   fontSize: 16,
                 ),
               ),
