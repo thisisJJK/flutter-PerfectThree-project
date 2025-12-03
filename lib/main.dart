@@ -18,7 +18,7 @@ void main() async {
 
   await Hive.openBox<Goal>('goals_box');
 
-  DateUtils.jumpTime(2);
+  DateUtils.jumpTime(0);
 
   CustomLogger.info("🚀 Perfect Three 앱이 시작됩니다. (Hive 초기화 완료)");
 

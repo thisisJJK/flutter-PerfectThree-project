@@ -100,7 +100,7 @@ class GoalCard extends ConsumerWidget {
                 SizedBox(width: AppSpacing.s),
                 InkWell(
                   onTap: () {
-                    _showDeleteDialog(context, ref, goal);
+                    _showDeleteDialog(context, ref, goal, isDark);
                   },
                   borderRadius: BorderRadius.circular(AppSpacing.radiusS),
                   child: Padding(
@@ -148,7 +148,7 @@ class GoalCard extends ConsumerWidget {
                           .toggleCheck(goal, index);
 
                       if (index == 2 && lastDay && isLast) {
-                        _showRetryDialog(context, ref, goal);
+                        _showRetryDialog(context, ref, goal, isDark);
                       }
                     },
                     child: Column(
@@ -241,7 +241,12 @@ class GoalCard extends ConsumerWidget {
   }
 }
 
-void _showRetryDialog(BuildContext context, WidgetRef ref, Goal goal) async {
+void _showRetryDialog(
+  BuildContext context,
+  WidgetRef ref,
+  Goal goal,
+  bool isDark,
+) async {
   return showDialog(
     barrierDismissible: false,
     context: context,
@@ -265,7 +270,11 @@ void _showRetryDialog(BuildContext context, WidgetRef ref, Goal goal) async {
             },
             child: Text(
               '그만하기',
-              style: Font.main.copyWith(color: AppColors.textSecondary),
+              style: Font.main.copyWith(
+                color: isDark
+                    ? AppColors.textSecondaryDark
+                    : AppColors.textSecondary,
+              ),
             ),
           ),
           FilledButton(
@@ -292,7 +301,12 @@ void _showRetryDialog(BuildContext context, WidgetRef ref, Goal goal) async {
   );
 }
 
-void _showDeleteDialog(BuildContext context, WidgetRef ref, Goal goal) async {
+void _showDeleteDialog(
+  BuildContext context,
+  WidgetRef ref,
+  Goal goal,
+  bool isDark,
+) async {
   return showDialog(
     barrierDismissible: false,
     context: context,
@@ -310,7 +324,11 @@ void _showDeleteDialog(BuildContext context, WidgetRef ref, Goal goal) async {
             },
             child: Text(
               '취소',
-              style: Font.main.copyWith(color: AppColors.textSecondary),
+              style: Font.main.copyWith(
+                color: isDark
+                    ? AppColors.textSecondaryDark
+                    : AppColors.textSecondary,
+              ),
             ),
           ),
           TextButton(

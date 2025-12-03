@@ -38,7 +38,9 @@ class _AddGoalScreenState extends ConsumerState<AddGoalScreen> {
       appBar: AppBar(
         title: const Text(
           "루틴 만들기",
-          style: TextStyle(fontSize: 20),
+          style: TextStyle(
+            fontSize: 20,
+          ),
         ),
       ),
       body: Padding(

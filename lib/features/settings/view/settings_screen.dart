@@ -5,6 +5,7 @@ import 'package:perfect_three/core/theme/app_colors.dart';
 import 'package:perfect_three/core/theme/app_spacing.dart';
 import 'package:perfect_three/core/theme/app_theme.dart';
 import 'package:perfect_three/core/theme/provider/theme_provider.dart';
+import 'package:perfect_three/features/settings/view/notification_settings_screen.dart';
 
 class SettingsScreen extends ConsumerWidget {
   const SettingsScreen({super.key});
@@ -43,8 +44,7 @@ class SettingsScreen extends ConsumerWidget {
         title: Text(
           "설정",
           style: Font.display.copyWith(
-            fontSize: 28,
-            fontWeight: FontWeight.w700,
+            fontSize: 20,
           ),
         ),
       ),
@@ -80,9 +80,17 @@ class SettingsScreen extends ConsumerWidget {
                   _buildListTile(
                     icon: Icons.notifications_outlined,
                     title: '알림',
-                    subtitle: '루틴 알림 설정 (준비 중)',
+                    subtitle: '루틴 알림 설정',
                     isDark: isDark,
-                    onTap: () => _showComingSoonDialog(context, '알림'),
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              const NotificationSettingsScreen(),
+                        ),
+                      );
+                    },
                     trailing: Icon(
                       Icons.chevron_right,
                       color: isDark
