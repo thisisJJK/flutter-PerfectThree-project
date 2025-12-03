@@ -415,6 +415,7 @@ class SettingsScreen extends ConsumerWidget {
         child: Container(
           padding: const EdgeInsets.all(AppSpacing.m),
           decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(AppSpacing.radiusL),
             gradient: LinearGradient(
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
