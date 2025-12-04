@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:perfect_three/core/services/notification_service.dart';
+import 'package:perfect_three/data/goal/repositories/goal_repository.dart';
 import 'package:perfect_three/data/settings/model/notification_settings.dart';
 import 'package:perfect_three/data/settings/repository/notification_repository.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -20,11 +21,13 @@ NotificationService notificationService(NotificationServiceRef ref) {
 class NotificationSettingsViewModel extends _$NotificationSettingsViewModel {
   late final NotificationRepository _repository;
   late final NotificationService _service;
+  late final GoalRepository _goalRepository;
 
   @override
   NotificationSettings build() {
     _repository = ref.watch(notificationRepositoryProvider);
     _service = ref.watch(notificationServiceProvider);
+    _goalRepository = ref.watch(goalRepositoryProvider);
 
     _checkPermissionStatus();
 
@@ -89,9 +92,15 @@ class NotificationSettingsViewModel extends _$NotificationSettingsViewModel {
     await _saveAndSchedule();
   }
 
+  Future<void> updateThreeDaySuccessAlerts(bool value) async {
+    state = state.copyWith(threeDaySuccessAlerts: value);
+    await _saveAndSchedule();
+  }
+
   Future<void> _saveAndSchedule() async {
     await _repository.saveSettings(state);
 
+    // 1. 데일리 브리핑 (기존 로직)
     if (state.allowNotifications && state.routineAlerts) {
       final time = state.timeOfDay;
       await _service.scheduleDailyNotification(
@@ -103,6 +112,24 @@ class NotificationSettingsViewModel extends _$NotificationSettingsViewModel {
       );
     } else {
       await _service.cancelNotification(0);
+    }
+
+    // 2. 응원 메시지
+    if (state.allowNotifications && state.marketingAlerts) {
+      // 응원 메시지는 데일리 브리핑 시간과 동일하게 설정하거나, 별도 시간이 필요하면 추가해야 함
+      // 현재는 데일리 브리핑 시간 + 1시간 또는 동일 시간으로 설정
+      // 기획상 별도 시간이 없으므로 데일리 브리핑 시간(기본 09:00)을 따름
+      await _service.scheduleCheerNotification(state.timeOfDay);
+    } else {
+      await _service.cancelCheerNotification();
+    }
+
+    // 3. 3일 성공 미리 알림
+    if (state.allowNotifications && state.threeDaySuccessAlerts) {
+      final goals = await _goalRepository.getGoals();
+      await _service.scheduleSuccessReminders(goals, state.timeOfDay);
+    } else {
+      await _service.cancelSuccessReminders();
     }
   }
 }

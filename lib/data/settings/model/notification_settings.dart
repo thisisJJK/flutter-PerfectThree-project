@@ -23,6 +23,9 @@ class NotificationSettings extends HiveObject {
   @HiveField(5)
   bool vibrationEnabled;
 
+  @HiveField(6)
+  bool threeDaySuccessAlerts;
+
   NotificationSettings({
     this.allowNotifications = true,
     this.routineAlerts = true,
@@ -30,6 +33,7 @@ class NotificationSettings extends HiveObject {
     this.marketingAlerts = false,
     this.soundEnabled = true,
     this.vibrationEnabled = true,
+    this.threeDaySuccessAlerts = true,
   });
 
   TimeOfDay get timeOfDay {
@@ -44,6 +48,7 @@ class NotificationSettings extends HiveObject {
     bool? marketingAlerts,
     bool? soundEnabled,
     bool? vibrationEnabled,
+    bool? threeDaySuccessAlerts,
   }) {
     return NotificationSettings(
       allowNotifications: allowNotifications ?? this.allowNotifications,
@@ -52,6 +57,8 @@ class NotificationSettings extends HiveObject {
       marketingAlerts: marketingAlerts ?? this.marketingAlerts,
       soundEnabled: soundEnabled ?? this.soundEnabled,
       vibrationEnabled: vibrationEnabled ?? this.vibrationEnabled,
+      threeDaySuccessAlerts:
+          threeDaySuccessAlerts ?? this.threeDaySuccessAlerts,
     );
   }
 }

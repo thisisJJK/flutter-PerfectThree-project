@@ -94,9 +94,10 @@ class NotificationSettingsScreen extends ConsumerWidget {
                 _buildSwitchTile(
                   title: '3일 성공 미리 알림',
                   subtitle: '작심삼일 성공 당일 미리 알림을 받습니다.',
-                  value: true, // TODO: Add to model if needed
+                  value: settings.threeDaySuccessAlerts,
                   isDark: isDark,
-                  onChanged: (value) {},
+                  onChanged: (value) =>
+                      viewModel.updateThreeDaySuccessAlerts(value),
                 ),
                 _buildDivider(isDark),
                 _buildSwitchTile(
